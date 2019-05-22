@@ -3,7 +3,7 @@
 
 ### Overview
 
-This is the Explorer project for the Ontology blockchain. The project is based on front and back separation framework. The Explorer back-end-projects contains two projects, the OntSynHandler project synchronizes block and transaction information to the local database and the Explorer project provides Restful API to query transaction,ontid,block information for the Explorer front-end and DApps. The Explorer front-end is based on Vue framework. 
+This is the Explorer project for the OnyxChain blockchain. The project is based on front and back separation framework. The Explorer back-end-projects contains two projects, the OntSynHandler project synchronizes block and transaction information to the local database and the Explorer project provides Restful API to query transaction,ontid,block information for the Explorer front-end and DApps. The Explorer front-end is based on Vue framework. 
 
 ### Installation Environment
 
@@ -108,9 +108,9 @@ spring.datasource.username = root
 spring.datasource.password = 1111
 
 ################blockchain param##########
-//the master ontology node restful api url
+//the master onyxchain node restful api url
 node.restful.url = http://127.0.0.1:20555
-//the amount of ontology blockchain nodes
+//the amount of onyxchain blockchain nodes
 node.amount=4
 //the node restful api url
 node.restful.url_0=http://127.0.0.1:20555
@@ -179,7 +179,7 @@ spring.datasource.password = 1111
 
 
 
-masternode.restful.url = http://polaris2.ont.io:20334
+masternode.restful.url = http://andromeda-sync.onyxpay.co:20334
 
 genesisblock.time=1530316800
 
@@ -259,12 +259,4 @@ cd the Explorer back-end project **log** directory，check for the latest log di
 
 
 - check by your browser
-Input the ip and port into your browser according to your Nginx server configuration, you can see the block and transaction information in your browser just like the [Ontology Explore](https://explorer.ont.io)
-
-
-
-### License
-
-The Ontology library (i.e. all code outside of the cmd directory) is licensed under the GNU Lesser General Public License v3.0, also included in our repository in the License file.
-
-
+Input the ip and port into your browser according to your Nginx server configuration, you can see the block and transaction information in your browser just like the [OnyxChain Explore](https://explorer.onyxpay.co)
