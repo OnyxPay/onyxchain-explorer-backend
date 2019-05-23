@@ -1,0 +1,49 @@
+version: "3"
+services:
+  db:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-db
+    build: back-end-projects/OntSynHandler/sql
+    network_mode: "host"
+    ports:
+      - "3306:3306"
+    volumes:
+      - /var/local/blockexplorer-${tag}/lib/mysql/:/var/lib/mysql/
+      - /var/local/blockexplorer-${tag}/log/mysql/:/var/log/mysql/
+  sync:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-sync:${tag}
+    build:
+      context: back-end-projects/OntSynHandler
+      args:
+        tag: ${tag}
+    network_mode: "host"
+    volumes:
+      - /var/local/blockexplorer-${tag}/log/sync/:/app/logs/
+    depends_on:
+      - db
+  api:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-api:${tag}
+    build:
+      context: back-end-projects/Explorer
+      args:
+        tag: ${tag}
+    network_mode: "host"
+    ports:
+      - "8090:8090"
+    volumes:
+      - /var/local/blockexplorer-${tag}/log/api/:/app/logs/
+    depends_on:
+      - sync
+  nginx:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-nginx:${tag}
+    build:
+      context: deploy/nginx
+      args:
+        tag: ${tag}
+    network_mode: "host"
+    ports:
+      - "443:443"
+    volumes:
+      - /var/local/blockexplorer-${tag}/log/nginx/:/var/log/nginx/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    depends_on:
+      - api

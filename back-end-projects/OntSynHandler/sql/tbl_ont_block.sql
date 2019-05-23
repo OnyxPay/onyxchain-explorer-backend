@@ -32,3 +32,5 @@ CREATE TABLE `tbl_ont_block` (
   `blocksize` int(10) NOT NULL,
   PRIMARY KEY (`height`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tbl_ont_block ADD  index idx_hash (hash);
