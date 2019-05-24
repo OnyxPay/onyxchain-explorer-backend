@@ -1,0 +1,23 @@
+language: none
+sudo: required
+services:
+  - docker
+  - docker-compose
+
+before_script: 
+  - echo $TRAVIS_COMMIT
+  - echo $TRAVIS_TAG
+  - echo $TRAVIS_BRANCH
+  - echo $TRAVIS_BUILD
+
+script:
+  - if [[ -z $TRAVIS_TAG ]]; then export TRAVIS_TAG=test; fi
+  - echo "containers building..."
+  - cd deploy; tag=$TRAVIS_TAG docker-compose build 
+
+deploy:
+- provider: script
+  script: bash deploy/aws.sh $TRAVIS_TAG
+  on:
+    tags: true 
+    condition: $TRAVIS_TAG =~ ^test|main$

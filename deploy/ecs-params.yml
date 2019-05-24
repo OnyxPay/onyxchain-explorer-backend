@@ -1,0 +1,12 @@
+version: 1
+task_definition:
+  ecs_network_mode: host
+  services:
+    nginx:
+      mem_reservation: 50MB
+    db:
+      mem_reservation: 150MB
+    sync:
+      mem_reservation: 400MB
+    api:
+      mem_reservation: 350MB

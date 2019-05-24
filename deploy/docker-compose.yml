@@ -2,7 +2,7 @@ version: "3"
 services:
   db:
     image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-db
-    build: back-end-projects/OntSynHandler/sql
+    build: ../back-end-projects/OntSynHandler/sql
     network_mode: "host"
     ports:
       - "3306:3306"
@@ -12,7 +12,7 @@ services:
   sync:
     image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-sync:${tag}
     build:
-      context: back-end-projects/OntSynHandler
+      context: ../back-end-projects/OntSynHandler
       args:
         tag: ${tag}
     network_mode: "host"
@@ -23,7 +23,7 @@ services:
   api:
     image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-api:${tag}
     build:
-      context: back-end-projects/Explorer
+      context: ../back-end-projects/Explorer
       args:
         tag: ${tag}
     network_mode: "host"
@@ -36,7 +36,7 @@ services:
   nginx:
     image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-nginx:${tag}
     build:
-      context: deploy/nginx
+      context: nginx
       args:
         tag: ${tag}
     network_mode: "host"
