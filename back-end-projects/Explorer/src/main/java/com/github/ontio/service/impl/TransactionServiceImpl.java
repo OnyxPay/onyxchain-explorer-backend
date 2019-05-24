@@ -169,7 +169,7 @@ public class TransactionServiceImpl implements ITransactionService {
         //db查询返回总条数or分页的前几十条
 //        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
         paramMap.put("Start", 0);
-        paramMap.put("PageSize", pageNumber * pageSize * 3);
+        paramMap.put("PageSize", pageSize);
 
         List<Map> fromAddrTxnList = transactionDetailMapper.selectTxnByFromAddressInfo(paramMap);
         List<Map> toAddrTxnList = transactionDetailMapper.selectTxnByToAddressInfo(paramMap);
@@ -453,11 +453,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
             Map<String, Object> ongMap = new HashMap<>();
             ongMap.put("AssetName", "ong");
-            ongMap.put("Balance", (new BigDecimal((String) balanceMap.get("ong")).divide(ConstantParam.ONT_TOTAL)).toPlainString());
+            ongMap.put("Balance", (new BigDecimal((String) balanceMap.get("oxg")).divide(ConstantParam.ONT_TOTAL)).toPlainString());
             balanceList.add(ongMap);
 
             //计算等待提取的ong
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get("ont"));
+            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get("onyx"));
             Map<String, Object> waitBoundOngMap = new HashMap<>();
             waitBoundOngMap.put("AssetName", "waitboundong");
             waitBoundOngMap.put("Balance", waitBoundOng);
@@ -477,7 +477,7 @@ public class TransactionServiceImpl implements ITransactionService {
             if (Helper.isEmptyOrNull(assetName)) {
                 Map<String, Object> ontMap = new HashMap<>();
                 ontMap.put("AssetName", "ont");
-                ontMap.put("Balance", balanceMap.get("ont"));
+                ontMap.put("Balance", balanceMap.get("onyx"));
                 balanceList.add(ontMap);
             }
 
@@ -485,11 +485,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
             Map<String, Object> ontMap = new HashMap<>();
             ontMap.put("AssetName", "ont");
-            ontMap.put("Balance", balanceMap.get("ont"));
+            ontMap.put("Balance", balanceMap.get("onyx"));
             balanceList.add(ontMap);
         }
 
-        if (Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
+        if (assetName.startsWith("pumpkin")) {
             balanceList = getPumpkinBalance(sdk, balanceList, address, assetName);
         }
         //OEP4余额
