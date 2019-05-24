@@ -2,7 +2,6 @@ language: none
 sudo: required
 services:
   - docker
-  - docker-compose
 
 before_script: 
   - echo $TRAVIS_COMMIT
@@ -11,7 +10,7 @@ before_script:
   - echo $TRAVIS_BUILD
 
 script:
-  - if [[ -z $TRAVIS_TAG ]]; then export TRAVIS_TAG=test; fi
+  - if [[ -z $TRAVIS_TAG ]]; then export TRAVIS_TAG=dev; fi
   - echo "containers building..."
   - ( cd deploy ; tag=$TRAVIS_TAG docker-compose build )
 
