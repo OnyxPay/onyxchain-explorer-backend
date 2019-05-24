@@ -13,7 +13,7 @@ before_script:
 script:
   - if [[ -z $TRAVIS_TAG ]]; then export TRAVIS_TAG=test; fi
   - echo "containers building..."
-  - cd deploy; tag=$TRAVIS_TAG docker-compose build 
+  - ( cd deploy ; tag=$TRAVIS_TAG docker-compose build )
 
 deploy:
 - provider: script
