@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/OnyxPay/onyxchain-explorer.svg?branch=master)](https://travis-ci.com/OnyxPay/onyxchain-explorer)
+
 ## Explorer project Installation and Deployment instructions
 
 
