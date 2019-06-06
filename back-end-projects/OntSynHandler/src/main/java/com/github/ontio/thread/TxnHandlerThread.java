@@ -171,7 +171,6 @@ public class TxnHandlerThread {
         } catch (RestfulException e) {
             logger.error("handleOneTxn RestfulException...{}", e);
             e.printStackTrace();
-            throw e;
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
             e.printStackTrace();
