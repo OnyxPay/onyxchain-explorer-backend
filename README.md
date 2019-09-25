@@ -181,11 +181,35 @@ spring.datasource.password = 1111
 
 
 
+masternode.restful.url = http://polaris2.ont.io:20334
+
+genesisblock.time=1530316800
+
+```
+################port#######################
+//service startup port
+server.port=7575    
+
+################database##################
+//the type of database
+spring.jpa.database = MYSQL
+//the driver for database
+spring.datasource.driverClassName = com.mysql.jdbc.Driver
+//the url for database
+spring.datasource.url = jdbc:mysql://localhost:3306/explorer?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+//the username for database
+spring.datasource.username = root
+//the password for databse
+spring.datasource.password = 1111
+
+
+
 masternode.restful.url = http://andromeda-sync.onyxpay.co:20334
 
 genesisblock.time=1530316800
 
 ```
+
 
 
 #### Explorer front-end project
