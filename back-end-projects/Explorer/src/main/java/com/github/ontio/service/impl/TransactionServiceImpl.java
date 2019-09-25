@@ -168,7 +168,7 @@ public class TransactionServiceImpl implements ITransactionService {
         //int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
         //db查询返回总条数or分页的前几十条
 //        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
-        paramMap.put("Start", 0);
+        paramMap.put("Start", pageNumber * pageSize);
         paramMap.put("PageSize", pageSize);
 
         List<Map> fromAddrTxnList = transactionDetailMapper.selectTxnByFromAddressInfo(paramMap);
