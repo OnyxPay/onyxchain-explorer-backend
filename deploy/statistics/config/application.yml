@@ -1,0 +1,51 @@
+spring:
+  jpa:
+    database: MYSQL
+    show-sql: false
+  messages:
+    encoding: UTF-8
+  http:
+    encoding:
+      charset: UTF-8
+  profiles:
+    active: dev
+  task:
+    scheduling:
+      pool:
+        size: 8
+      thread-name-prefix: "explorer-task-"
+  output:
+    ansi:
+      enabled: detect
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  datasource:
+    max-idle: 10
+    min-idle: 5
+    initial-size: 5
+    validation-query: SELECT 1
+    test-on-borrow: false
+    test-while-idle: true
+    time-between-eviction-runs-millis: 18800
+mybatis:
+  check-config-location: true
+  type-aliases-package: com.github.ontio.explorer.statistics.model
+  mapper-locations: classpath*:**/mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+server:
+  port: 8093
+  tomcat:
+    uri-encoding: UTF-8
+
+config:
+  is-test-net: false
+  new-staking-round-block-count: 120000
+
+node-schedule-task:
+  update-on-chain-info: 300000
+  update-net-nodes-info: "0 20 0 * * *"
+  update-block-count-to-next-round: 10000
+  update-node-rank-history: 300000
