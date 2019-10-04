@@ -1,5 +1,4 @@
 language: none
-sudo: required
 services:
   - docker
 
@@ -10,13 +9,11 @@ before_script:
   - echo $TRAVIS_BUILD
 
 script:
-  - if [[ -z $TRAVIS_TAG ]]; then export TRAVIS_TAG=dev; fi
   - echo "containers building..."
-  - ( cd deploy ; tag=$TRAVIS_TAG docker-compose build )
+  - ( cd deploy ; docker-compose build )
 
 deploy:
 - provider: script
-  script: bash deploy/aws.sh $TRAVIS_TAG
+  script: bash deploy/aws.sh
   on:
-    tags: true 
-    condition: $TRAVIS_TAG =~ ^test|main$
+    branch: onyxchain-v2 
