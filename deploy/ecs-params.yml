@@ -2,11 +2,15 @@ version: 1
 task_definition:
   ecs_network_mode: host
   services:
-    nginx:
-      mem_reservation: 50MB
-    db:
-      mem_reservation: 150MB
-    sync:
+    mysql:
+      mem_reservation: 500MB
+    redis:
+      mem_reservation: 100MB
+    explorer:
       mem_reservation: 400MB
-    api:
-      mem_reservation: 350MB
+    ontsynhandler:
+      mem_reservation: 400MB
+    holder:
+      mem_reservation: 50MB
+    statistics:
+      mem_reservation: 400MB

@@ -7,9 +7,11 @@ export PATH=$PATH:$HOME/.local/bin
 
 echo "ecr login"
 eval $(aws ecr get-login --region us-east-2 --no-include-email)
-docker push 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-db
-docker push 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-sync:$TAG
-docker push 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-api:$TAG
-docker push 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-nginx:$TAG
-if [ $TAG == "main" ] ; then CLUSTER=blockexplorer-prod ; else CLUSTER=blockexplorer-preprod ; fi
-aws ecs update-service --service blockexplorer --cluster $CLUSTER --region us-east-2 --force-new-deployment
+for i in ontsynhandler explorer holder statistics ; do
+    docker push 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-$i ;
+done
+
+if [ $TAG == "main" ] ; then
+    aws ecs update-service --cluster blockexplorer-v2-main --service blockexplorer-v2 --region us-east-2 --force-new-deployment ;
+    aws ecs update-service --cluster blockexplorer-v2-test --service blockexplorer-v2-test --region us-east-2 --force-new-deployment ;
+fi
