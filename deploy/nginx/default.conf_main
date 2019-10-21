@@ -1,0 +1,22 @@
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    ssl_certificate /etc/letsencrypt/live/andromeda-explorer.onyxpay.co/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/andromeda-explorer.onyxpay.co/privkey.pem;
+    server_name andromeda-explorer.onyxpay.co;
+
+    location /api {
+        proxy_pass http://localhost:8090;
+    }
+
+    location /v2 {
+        proxy_pass http://ec2-3-17-77-100.us-east-2.compute.amazonaws.com:8080;
+    }
+
+	location /getAssetHolder {
+        proxy_pass http://ec2-3-17-77-100.us-east-2.compute.amazonaws.com:8082;
+    }
+
+    error_log /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+}
