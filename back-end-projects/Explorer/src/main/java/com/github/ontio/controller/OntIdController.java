@@ -19,19 +19,25 @@
 
 package com.github.ontio.controller;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.OntIdServiceImpl;
 import com.github.ontio.util.Helper;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author zhouq
@@ -79,7 +85,7 @@ public class OntIdController {
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get ONT ID transaction list by page")
     @GetMapping(value = "/ontids/{ontid}/transactions")
-    public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid,
+    public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:onx:A[A-Za-z0-9]{33}", message = "Incorrect ONYX ID format") String ontid,
                                              @RequestParam("page_size") @Max(20) @Min(1) int pageSize,
                                              @RequestParam("page_number") @Min(1) int pageNumber) {
 
@@ -91,7 +97,7 @@ public class OntIdController {
 
     @ApiOperation(value = "Get ONT ID Ddo by page")
     @GetMapping(value = "/ontids/{ontid}/ddo")
-    public ResponseBean queryOntIdDdo(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid) {
+    public ResponseBean queryOntIdDdo(@PathVariable("ontid") @Pattern(regexp = "did:onx:A[A-Za-z0-9]{33}", message = "Incorrect ONYX ID format") String ontid) {
 
         log.info("####{}.{} begin...ontid:{}", CLASS_NAME, Helper.currentMethod(), ontid);
 
