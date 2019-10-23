@@ -29,7 +29,7 @@ services:
       - mysql
       - redis
   holder:
-    image: 8866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-holder
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-holder
     build:
       context: holder
     network_mode: "host"
@@ -38,7 +38,7 @@ services:
     depends_on:
       - mysql
   statistics:
-    image: 8866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-statistics
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-statistics
     build:
       context: statistics
     network_mode: "host"
