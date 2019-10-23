@@ -11,7 +11,7 @@ public enum EventTypeEnum {
     DeployContract("deploy contract", 1),
     Gasconsume("gasconsume", 2),
     Transfer("transfer", 3),
-    Ontid("onyxid-", 4),
+    Ontid("onxid-", 4),
     Claimrecord("claimRecord-", 5),
     Auth("auth", 6);
 
