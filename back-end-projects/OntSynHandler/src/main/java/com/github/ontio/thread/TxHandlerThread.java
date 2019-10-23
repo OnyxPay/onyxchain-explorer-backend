@@ -19,6 +19,14 @@
 
 package com.github.ontio.thread;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -32,25 +40,24 @@ import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.OntIdEventDesEnum;
 import com.github.ontio.model.common.TransactionTypeEnum;
-import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dao.Contract;
+import com.github.ontio.model.dao.Oep5;
+import com.github.ontio.model.dao.Oep5Dragon;
+import com.github.ontio.model.dao.Oep8;
+import com.github.ontio.model.dao.OntidTxDetail;
+import com.github.ontio.model.dao.TxDetail;
+import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.ehcache.transaction.xa.EhcacheXAException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -841,10 +848,11 @@ public class TxHandlerThread {
 
             try {
                 toAddress = Address.parse((String) stateArray.get(2)).toBase58();
-                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             } catch (Exception e) {
-                log.warn("Parsing OEP-4 transfer event failed in transaction {}", txHash);
+                toAddress = (String) stateArray.get(2);
             }
+
+            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
         }
 
