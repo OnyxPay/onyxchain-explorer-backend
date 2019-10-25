@@ -2,7 +2,7 @@ language: none
 services:
   - docker
 
-before_script: 
+before_script:
   - echo $TRAVIS_COMMIT
   - echo $TRAVIS_TAG
   - echo $TRAVIS_BRANCH
@@ -10,10 +10,10 @@ before_script:
 
 script:
   - echo "containers building..."
-  - ( cd deploy ; docker-compose build )
+  - ( cd deploy ; docker-compose build ontsynhandler explorer statistics ) # TODO: ONXP-1650 Fix holder build
 
 deploy:
 - provider: script
-  script: bash deploy/aws.sh
+  script: ( cd deploy; bash aws.sh )
   on:
-    branch: onyxchain-v2 
+    branch: onyxchain-v2
