@@ -19,6 +19,8 @@
 
 package com.github.ontio.service.impl;
 
+import java.util.List;
+
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
@@ -35,12 +37,11 @@ import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
-import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service("TransactionService")
@@ -123,7 +124,9 @@ public class TransactionServiceImpl implements ITransactionService {
                 //ONG转换好精度给前端
                 String assetName = item.getAssetName();
                 if (ConstantParam.ONG.equals(assetName)) {
-                    item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
+                    item.setAmount(item.getAmount().scaleByPowerOfTen(-ConstantParam.ONG_DECIMAL));
+                } else if (ConstantParam.ONT.equals(assetName)) {
+                    item.setAmount(item.getAmount().scaleByPowerOfTen(-ConstantParam.ONT_DECIMAL));
                 }
             });
             detailObj.put("transfers", txDetailDtos);

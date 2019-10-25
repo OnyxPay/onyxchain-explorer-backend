@@ -1,0 +1,16 @@
+version: 1
+task_definition:
+  ecs_network_mode: host
+  services:
+    mysql:
+      mem_reservation: 500MB
+    redis:
+      mem_reservation: 100MB
+    explorer:
+      mem_reservation: 400MB
+    ontsynhandler:
+      mem_reservation: 400MB
+    holder:
+      mem_reservation: 50MB
+    statistics:
+      mem_reservation: 400MB

@@ -1,0 +1,50 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8
+    network_mode: "host"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql-data:/var/lib/mysql/
+  redis:
+    image: redis:5-alpine
+  ontsynhandler:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-ontsynhandler
+    build:
+      context: ../back-end-projects/OntSynHandler
+    network_mode: "host"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${ONYXCHAIN_NET}
+    depends_on:
+      - mysql
+  explorer:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-explorer
+    build:
+      context: ../back-end-projects/Explorer
+    network_mode: "host"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${ONYXCHAIN_NET}
+    depends_on:
+      - mysql
+      - redis
+  holder:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-holder
+    build:
+      context: holder
+    network_mode: "host"
+    environment:
+      - ONYXCHAIN_NET
+    depends_on:
+      - mysql
+  statistics:
+    image: 866680356172.dkr.ecr.us-east-2.amazonaws.com/blockexplorer-v2-statistics
+    build:
+      context: statistics
+    network_mode: "host"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${ONYXCHAIN_NET}
+    depends_on:
+      - mysql
+volumes:
+  mysql-data:

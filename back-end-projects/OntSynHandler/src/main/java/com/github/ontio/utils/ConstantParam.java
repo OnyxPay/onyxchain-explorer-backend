@@ -108,9 +108,9 @@ public final class ConstantParam {
 
 
 
-    public static final String ASSET_NAME_ONT = "ont";
+    public static final String ASSET_NAME_ONT = "onyx";
 
-    public static final String ASSET_NAME_ONG = "ong";
+    public static final String ASSET_NAME_ONG = "oxg";
 
     public static final String ASSET_NAME_DRAGON = "HyperDragons: ";
 

@@ -45,7 +45,7 @@
   <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.Oep4TxDetailDto">
     select DISTINCT <include refid="txBasicColumns"/>
     from tbl_oep4_tx_detail
-    where called_contract_hash = #{calledContractHash}
+    where contract_hash = #{calledContractHash}
     order by block_height desc
     limit #{startIndex}, #{pageSize}
   </select>
@@ -53,7 +53,7 @@
   <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
     select count(DISTINCT (tx_hash))
     from tbl_oep4_tx_detail
-    where called_contract_hash = #{calledContractHash}
+    where contract_hash = #{calledContractHash}
   </select>
 
 </mapper>

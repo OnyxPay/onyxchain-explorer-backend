@@ -1,43 +1,30 @@
 ################################
 ### Builder image
 ################################
-FROM maven:3.6.1-slim as builder
+FROM maven:3.6-jdk-8-alpine as builder
 
-ENV VERSION=version2.0 \
-    MYSQL_TEST_PASSWORD=qwerty
+WORKDIR /usr/src/app
 
-RUN apt update && \
-    apt install -y \
-    git
+COPY pom.xml ./
+RUN mvn dependency:go-offline
 
-RUN git clone https://github.com/ontio/ontology-explorer.git && \
-    cd ontology-explorer && \
-    git checkout $VERSION
-
-WORKDIR /ontology-explorer
-
-RUN cd back-end-projects/OntSynHandler && \
-    mvn clean package
+COPY src/ src/
+RUN mvn -o clean package -DskipTests
 
 #################################
 #### Runner image
 #################################
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-jre-alpine
 
-ENV MYSQL_TEST_PASSWORD=qwerty
-
-RUN apk add --no-cache ca-certificates bash
+ENV SPRING_PROFILES_ACTIVE=main
 
 RUN addgroup ontology && \
     adduser -G ontology -s /bin/sh -D ontology -h /home/ontology
 
-COPY --from=builder /ontology-explorer/back-end-projects/OntSynHandler/target/ontsynhandler-1.0.0-SNAPSHOT.jar /home/ontology/app.jar
-COPY --from=builder /ontology-explorer/back-end-projects/OntSynHandler/config /home/ontology/config
-
-# # Run as non root
 USER ontology
 WORKDIR /home/ontology
 
-EXPOSE 8090
+COPY --from=builder /usr/src/app/target/*.jar ontsynhandler.jar
+COPY config/ config/
 
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "ontsynhandler.jar"]

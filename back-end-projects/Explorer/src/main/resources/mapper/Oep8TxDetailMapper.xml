@@ -45,7 +45,7 @@
   <select id="selectTxsByCalledContractHashAndTokenName" resultType="com.github.ontio.model.dto.Oep8TxDetailDto">
     select DISTINCT <include refid="txBasicColumns"/>
     from tbl_oep8_tx_detail
-    where called_contract_hash = #{calledContractHash}
+    where contract_hash = #{calledContractHash}
     <if test="tokenName != '' and tokenName != null">
       and asset_name = #{tokenName}
     </if>
@@ -56,7 +56,7 @@
   <select id="selectCountByCalledContracthashAndTokenName" resultType="java.lang.Integer">
     select count(DISTINCT (tx_hash))
     from tbl_oep8_tx_detail
-    where called_contract_hash = #{calledContractHash}
+    where contract_hash = #{calledContractHash}
     <if test="tokenName != '' and tokenName != null">
       and asset_name = #{tokenName}
     </if>
