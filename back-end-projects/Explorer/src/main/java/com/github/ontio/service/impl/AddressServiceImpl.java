@@ -1,5 +1,11 @@
 package com.github.ontio.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
@@ -16,16 +22,16 @@ import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
 import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.util.*;
-import lombok.extern.slf4j.Slf4j;
+import com.github.ontio.util.ConstantParam;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import com.github.ontio.util.JacksonUtil;
+import com.github.ontio.util.OntologySDKService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author zhouq
@@ -288,7 +294,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto1 = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).scaleByPowerOfTen(-ConstantParam.ONG_DECIMAL)))
                 .build();
         balanceList.add(balanceDto1);
 
@@ -317,7 +323,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto4 = BalanceDto.builder()
                 .assetName(ConstantParam.ONT)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).scaleByPowerOfTen(-ConstantParam.ONT_DECIMAL)))
                 .build();
         balanceList.add(balanceDto4);
 
@@ -1050,7 +1056,9 @@ public class AddressServiceImpl implements IAddressService {
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
             if (ConstantParam.ONG.equals(assetName)) {
-                amount = amount.divide(ConstantParam.ONG_TOTAL);
+                amount = amount.scaleByPowerOfTen(-ConstantParam.ONG_DECIMAL);
+            } else if (ConstantParam.ONT.equals(assetName)) {
+                amount = amount.scaleByPowerOfTen(-ConstantParam.ONT_DECIMAL);
             }
 
             String txHash = transferTxDto.getTxHash();
