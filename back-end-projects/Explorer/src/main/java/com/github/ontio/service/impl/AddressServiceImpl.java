@@ -907,7 +907,7 @@ public class AddressServiceImpl implements IAddressService {
         return ong.toPlainString();
     }
 
-    private Integer GetTotalTransferTxsByPage(String address, String assetName)
+    private Integer GetTotalTransferTxs(String address, String assetName)
     {
         if (Helper.isEmptyOrNull(assetName))
         {
@@ -946,7 +946,7 @@ public class AddressServiceImpl implements IAddressService {
         }
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList,
-                                        GetTotalTransferTxsByPage(address, assetName));
+                                        GetTotalTransferTxs(address, assetName));
     }
 
 
@@ -973,7 +973,8 @@ public class AddressServiceImpl implements IAddressService {
 
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
-        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos, new Integer(0));
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos,
+                                        GetTotalTransferTxs(address, assetName));
     }
 
     @Override
