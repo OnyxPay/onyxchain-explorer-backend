@@ -140,16 +140,12 @@
         ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
     </select>
 
-    <select id="selectTransferTxCountByAddr" resultType="java.lang.Integer">
+    <select id="selectTransferTxCount" resultType="java.lang.Integer">
         SELECT count(1)
         FROM tbl_tx_detail
-        WHERE from_address = #{address}
-        OR to_address = #{address}
-    </select>
-
-    <select id="selectTransferTxCountByAddrAndAssetName" resultType="java.lang.Integer">
-        SELECT count(1)
-        FROM tbl_tx_detail
-        WHERE (from_address = #{address} OR to_address = #{address}) AND asset_name like #{assetName}
+        WHERE (from_address = #{address} OR to_address = #{address}) 
+        <if test="assetName != '' and assetName != null">
+            AND asset_name like #{assetName}
+        </if>
     </select>
 </mapper>

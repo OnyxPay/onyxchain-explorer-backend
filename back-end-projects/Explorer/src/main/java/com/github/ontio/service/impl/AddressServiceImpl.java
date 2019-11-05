@@ -907,16 +907,6 @@ public class AddressServiceImpl implements IAddressService {
         return ong.toPlainString();
     }
 
-    private Integer GetTotalTransferTxs(String address, String assetName)
-    {
-        if (Helper.isEmptyOrNull(assetName))
-        {
-            return txDetailMapper.selectTransferTxCountByAddr(address);
-        }
-
-        return txDetailMapper.selectTransferTxCountByAddrAndAssetName(address, assetName);
-    }
-
     @Override
     public ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
@@ -928,7 +918,7 @@ public class AddressServiceImpl implements IAddressService {
 
         if (formattedTransferTxDtos.size() > 0 && formattedTransferTxDtos.size() < pageSize * pageNumber) {
             //合并和格式化转账交易记录数 < （pageNumber * pageSize），根据总记录数再重新查询所有的记录
-            int transferTxTotal = txDetailMapper.selectTransferTxCountByAddr(address);
+            int transferTxTotal = txDetailMapper.selectTransferTxCount(address, "");
             if (transferTxTotal > pageNumber * pageSize * 3) {
                 //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
                 List<TransferTxDto> transferTxDtos2 = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, transferTxTotal);
@@ -946,7 +936,7 @@ public class AddressServiceImpl implements IAddressService {
         }
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList,
-                                        GetTotalTransferTxs(address, assetName));
+                                        txDetailMapper.selectTransferTxCount(address, assetName));
     }
 
 
@@ -974,7 +964,7 @@ public class AddressServiceImpl implements IAddressService {
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos,
-                                        GetTotalTransferTxs(address, assetName));
+                                        txDetailMapper.selectTransferTxCount(address, assetName));
     }
 
     /**

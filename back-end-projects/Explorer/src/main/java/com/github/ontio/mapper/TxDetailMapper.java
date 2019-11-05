@@ -23,8 +23,5 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TransferTxDto> selectTransferTxsByTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
-    Integer selectTransferTxCountByAddr(@Param("address") String address);
-
-    Integer selectTransferTxCountByAddrAndAssetName(@Param("address") String address, @Param("assetName") String assetName);
-
+    Integer selectTransferTxCount(@Param("address") String address, @Param("assetName") String assetName);
 }
