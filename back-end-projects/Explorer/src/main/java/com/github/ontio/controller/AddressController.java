@@ -84,19 +84,7 @@ public class AddressController {
                                                               @RequestParam(name = "end_time", required = false) Long endTime) {
 
         log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
-
-        ResponseTransactions response = new ResponseTransactions();
-        if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
-            response = addressService.queryTransferTxsByPage(address, "", pageNumber, pageSize);
-        } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
-            //request time max range is one week
-            if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
-                return new ResponseTransactions(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(),
-                                                new ArrayList<TransferTxDto>(), new Integer(0));
-            }
-            response = addressService.queryTransferTxsByTime(address, "", beginTime, endTime);
-        }
-        return response;
+        return queryAddressTransferTxsByPageAndAssetName(address, "", pageSize, pageNumber, beginTime, endTime);
     }
 
     @RequestLimit(count = 120)
@@ -107,26 +95,25 @@ public class AddressController {
                                                                           @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
                                                                           @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
                                                                           @RequestParam(name = "begin_time", required = false) Long beginTime,
-                                                                          @RequestParam(name = "end_time", required = false) Long endTime,
-                                                                          @RequestParam(name = "channel", required = false) String channel,
-                                                                          @RequestParam(name = "address_type", required = false) @Pattern(regexp = "fromAddress|toAddress") String addressType) {
+                                                                          @RequestParam(name = "end_time", required = false) Long endTime) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
-        ResponseTransactions response = new ResponseTransactions();
-
         if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
+            return addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
 
-            response = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+
             //request time max range is one week
             if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
                 return new ResponseTransactions(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(),
                                                 new ArrayList<TransferTxDto>(), new Integer(0));
             }
-            response = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
+
+            return addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
         }
-        return response;
+
+        return new ResponseTransactions();
     }
 
 
