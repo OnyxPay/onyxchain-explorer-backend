@@ -14,9 +14,4 @@ public interface IAddressService {
     ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
     ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
-
-    ResponseTransactions queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType);
-
-    ResponseTransactions queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType);
-
 }

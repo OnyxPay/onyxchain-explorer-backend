@@ -87,7 +87,6 @@ public class AddressController {
 
         ResponseTransactions response = new ResponseTransactions();
         if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
-
             response = addressService.queryTransferTxsByPage(address, "", pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
             //request time max range is one week
@@ -115,28 +114,17 @@ public class AddressController {
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseTransactions response = new ResponseTransactions();
-        //ONTO request
-        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
 
-            if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+        if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
 
-                response = addressService.queryTransferTxsByTime4Onto(address, assetName, beginTime, endTime, addressType);
-            } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
-
-                response = addressService.queryTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize, addressType);
+            response = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
+        } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+            //request time max range is one week
+            if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
+                return new ResponseTransactions(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(),
+                                                new ArrayList<TransferTxDto>(), new Integer(0));
             }
-        } else {
-            if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
-
-                response = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
-            } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
-                //request time max range is one week
-                if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
-                    return new ResponseTransactions(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(),
-                                                    new ArrayList<TransferTxDto>(), new Integer(0));
-                }
-                response = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
-            }
+            response = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
         }
         return response;
     }
