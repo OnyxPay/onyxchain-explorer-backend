@@ -14,6 +14,7 @@ import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.common.ResponseTransactions;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
 import com.github.ontio.model.dao.Oep8;
@@ -908,7 +909,7 @@ public class AddressServiceImpl implements IAddressService {
 
 
     @Override
-    public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+    public ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
         List<TransferTxDto> returnList = new ArrayList<>();
         //查询前（pageNumber * pageSize * 3）条记录
@@ -935,7 +936,7 @@ public class AddressServiceImpl implements IAddressService {
             returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
         }
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList);
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList, new Integer(0));
     }
 
 
@@ -956,17 +957,17 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
+    public ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
 
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos, new Integer(0));
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType) {
+    public ResponseTransactions queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -988,7 +989,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime, endTime);
             }
         } else if (ADDRESS_TYPE_TO.equals(addressType)) {
-            //query transfer txs by toaddress
+            //query transfer txs by to address
             //dragon asset use 'like' query, for ONTO
             if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
                 assetName = assetName + "%";
@@ -999,11 +1000,11 @@ public class AddressServiceImpl implements IAddressService {
         }
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos, new Integer(0));
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType) {
+    public ResponseTransactions queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -1036,7 +1037,7 @@ public class AddressServiceImpl implements IAddressService {
         }
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos, new Integer(0));
     }
 
     /**
