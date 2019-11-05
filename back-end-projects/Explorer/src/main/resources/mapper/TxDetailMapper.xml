@@ -358,4 +358,9 @@
         OR to_address = #{address}
     </select>
 
+    <select id="selectTransferTxCountByAddrAndAssetName" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM tbl_tx_detail
+        WHERE (from_address = #{address} OR to_address = #{address}) AND asset_name like #{assetName}
+    </select>
 </mapper>

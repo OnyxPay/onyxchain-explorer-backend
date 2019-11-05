@@ -54,5 +54,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
 
     Integer selectTransferTxCountByAddr(@Param("address") String address);
+    Integer selectTransferTxCountByAddrAndAssetName(@Param("address") String address, @Param("assetName") String assetName);
 
 }

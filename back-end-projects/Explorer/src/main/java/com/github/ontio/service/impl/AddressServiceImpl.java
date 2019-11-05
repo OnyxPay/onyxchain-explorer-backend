@@ -907,6 +907,15 @@ public class AddressServiceImpl implements IAddressService {
         return ong.toPlainString();
     }
 
+    private Integer GetTotalTransferTxsByPage(String address, String assetName)
+    {
+        if (Helper.isEmptyOrNull(assetName))
+        {
+            return txDetailMapper.selectTransferTxCountByAddr(address);
+        }
+
+        return txDetailMapper.selectTransferTxCountByAddrAndAssetName(address, assetName);
+    }
 
     @Override
     public ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
@@ -936,7 +945,8 @@ public class AddressServiceImpl implements IAddressService {
             returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
         }
 
-        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList, new Integer(0));
+        return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList,
+                                        GetTotalTransferTxsByPage(address, assetName));
     }
 
 
@@ -998,6 +1008,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeInToAddr4Onto(address, assetName, beginTime, endTime);
             }
         }
+
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos, new Integer(0));
