@@ -9,8 +9,6 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
-    ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName);
-
     ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
     ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);

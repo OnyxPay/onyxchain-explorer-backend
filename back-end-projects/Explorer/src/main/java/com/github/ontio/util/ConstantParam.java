@@ -155,8 +155,4 @@ public class ConstantParam {
 
 
     public static final String BALANCESERVICE_QUERYBALANCE_URL = "/api/v1/multibalance";
-
-    public static final String CHANNEL_ONTO = "onto";
-
-
 }

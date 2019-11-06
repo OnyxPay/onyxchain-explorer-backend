@@ -59,18 +59,10 @@ public class AddressController {
     @ApiOperation(value = "Get address balance by assetName")
     @GetMapping(value = "/{address}/balances")
     public ResponseBean queryAddressBalanceByAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                                       @RequestParam("asset_name") String assetName,
-                                                       @RequestParam(value = "channel", required = false) String channel) {
+                                                       @RequestParam("asset_name") String assetName) {
 
         log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
-
-        ResponseBean rs = new ResponseBean();
-        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
-            rs = addressService.queryAddressBalanceByAssetName4Onto(address, assetName);
-        } else {
-            rs = addressService.queryAddressBalanceByAssetName(address, assetName);
-        }
-        return rs;
+        return addressService.queryAddressBalanceByAssetName(address, assetName);
     }
 
 
