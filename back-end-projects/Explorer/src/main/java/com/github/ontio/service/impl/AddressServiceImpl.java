@@ -31,6 +31,8 @@ import com.github.ontio.util.OntologySDKService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -434,6 +436,14 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
+    private String decodeAssetName(String hexAssetName) {
+        try {
+            return new String(Hex.decodeHex(hexAssetName.toCharArray()));
+        } catch (DecoderException e) {
+            return "";
+        }
+    }
+
     private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray) {
         List<BalanceDto> balances = new ArrayList<BalanceDto>();
 
@@ -441,7 +451,7 @@ public class AddressServiceImpl implements IAddressService {
             JSONArray balance = (JSONArray) object;
 
             String hexSymbol = (String) balance.get(0);
-            String assetName = com.github.ontio.common.Helper.hexToBytes(hexSymbol).toString();
+            String assetName = decodeAssetName(hexSymbol);
             BigDecimal bigDecimalBalance = new BigDecimal((String) balance.get(1));
 
             if ((bigDecimalBalance).compareTo(ConstantParam.ZERO) == 0) {
@@ -718,7 +728,7 @@ public class AddressServiceImpl implements IAddressService {
             JSONArray nestedArray = (JSONArray) object;
 
             String hexSymbol = (String) nestedArray.get(0);
-            String assetName = com.github.ontio.common.Helper.hexToBytes(hexSymbol).toString();
+            String assetName = decodeAssetName(hexSymbol);
             String balance = (String) nestedArray.get(1);
 
             if (assetName.equals(symbol)) {
