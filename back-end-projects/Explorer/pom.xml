@@ -103,10 +103,9 @@
 		<!--ontology-javasdk -->
 		<dependency>
 			<groupId>com.github.ontio</groupId>
-			<artifactId>ontology-sdk-java</artifactId>
-			<version>1.0.10</version>
+			<artifactId>onyxchain-sdk-java</artifactId>
+			<version>1.0.15</version>
 		</dependency>
-
 
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -164,6 +163,12 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.12</version>
 		</dependency>
 
 	</dependencies>

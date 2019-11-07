@@ -417,31 +417,46 @@ public class AddressServiceImpl implements IAddressService {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
+
         //审核过的OEP8余额
         if (Helper.isNotEmptyOrNull(assetName)) {
             assetName = assetName + "%";
         }
+
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
-        for (Map<String, String> map :
-                oep8s) {
+        for (Map<String, String> map : oep8s) {
             String contractHash = map.get("contractHash");
-            String symbol = map.get("symbol");
 
             JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-            String[] symbolArray = symbol.split(",");
-            for (int i = 0; i < symbolArray.length; i++) {
-                if (Integer.parseInt((String) balanceArray.get(i)) == 0) {
-                    continue;
-                }
-                BalanceDto balanceDto = BalanceDto.builder()
-                        .assetName(symbolArray[i])
-                        .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                        .balance(new BigDecimal((String) balanceArray.get(i)))
-                        .build();
-                balanceList.add(balanceDto);
-            }
+            balanceList.addAll(getBalancesListFromJson(balanceArray));
         }
+
         return balanceList;
+    }
+
+    private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray) {
+        List<BalanceDto> balances = new ArrayList<BalanceDto>();
+
+        for (Object object: balancesJsonArray) {
+            JSONArray balance = (JSONArray) object;
+
+            String hexSymbol = (String) balance.get(0);
+            String assetName = com.github.ontio.common.Helper.hexToBytes(hexSymbol).toString();
+            BigDecimal bigDecimalBalance = new BigDecimal((String) balance.get(1));
+
+            if ((bigDecimalBalance).compareTo(ConstantParam.ZERO) == 0) {
+                continue;
+            }
+            
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(assetName)
+                    .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                    .balance(bigDecimalBalance)
+                    .build();
+            balances.add(balanceDto);
+        }
+
+        return balances;
     }
 
 
@@ -647,31 +662,27 @@ public class AddressServiceImpl implements IAddressService {
             assetName = assetName + "%";
         }
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
-        for (Map<String, String> map :
-                oep8s) {
+        for (Map<String, String> map: oep8s) {
             String contractHash = map.get("contractHash");
-            String symbol = map.get("symbol");
-            String[] symbolArray = symbol.split(",");
-            int total = 0;
-
             JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-            for (int i = 0; i < symbolArray.length; i++) {
-                BalanceDto balanceDto = BalanceDto.builder()
-                        .assetName(symbolArray[i])
-                        .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                        .balance(new BigDecimal((String) balanceArray.get(i)))
-                        .build();
-                balanceList.add(balanceDto);
-                total = total + Integer.valueOf((String) balanceArray.get(i));
-            }
+
+            balanceList = getBalancesListFromJson(balanceArray);
             BalanceDto balanceDto = BalanceDto.builder()
                     .assetName("totalpumpkin")
                     .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                    .balance(new BigDecimal(total))
+                    .balance(getTotalBalance(balanceList))
                     .build();
             balanceList.add(balanceDto);
         }
         return balanceList;
+    }
+
+    private BigDecimal getTotalBalance(List<BalanceDto> balances) {
+        BigDecimal total = new BigDecimal("0");
+        for (BalanceDto balance: balances) {
+            total.add(balance.getBalance());
+        }
+        return total;
     }
 
 
@@ -685,21 +696,37 @@ public class AddressServiceImpl implements IAddressService {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
-        int i = Integer.valueOf(inputSymbol.substring(inputSymbol.length() - 1, inputSymbol.length()));
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(inputSymbol);
 
         String contractHash = oep8s.get(0).get("contractHash");
         String symbol = oep8s.get(0).get("symbol");
 
         JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
+        BigDecimal balance = getBalanceBySymbol(balanceArray, symbol);
 
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(symbol)
                 .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                .balance(new BigDecimal((String) balanceArray.get(i - 1)))
+                .balance(balance)
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
+    }
+
+    private BigDecimal getBalanceBySymbol(JSONArray balanceArray, String symbol) {
+        for (Object object: balanceArray) {
+            JSONArray nestedArray = (JSONArray) object;
+
+            String hexSymbol = (String) nestedArray.get(0);
+            String assetName = com.github.ontio.common.Helper.hexToBytes(hexSymbol).toString();
+            String balance = (String) nestedArray.get(1);
+
+            if (assetName.equals(symbol)) {
+                return new BigDecimal(balance);
+            }
+        }
+    
+        return new BigDecimal("0");
     }
 
     /**
