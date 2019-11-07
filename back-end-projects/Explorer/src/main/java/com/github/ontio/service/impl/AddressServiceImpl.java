@@ -190,16 +190,11 @@ public class AddressServiceImpl implements IAddressService {
                 if (Helper.isNotEmptyOrNull(oep5)) {
                     balanceList = getOep5Balance2(address, oep5);
                 } else {
-                    //return all pumpkins and total pumpkin number
-                    if (assetName.equals(ConstantParam.OEP8_PUMPKIN_PREFIX)) {
-                        balanceList = getOep8Balance4OntoOld(address, ConstantParam.OEP8_PUMPKIN_PREFIX);
-                    } else {
-                        Oep8 oep8 = new Oep8();
-                        oep8.setSymbol(assetName);
-                        List<Oep8> oep8s = oep8Mapper.select(oep8);
-                        if (oep8s.size() > 0) {
-                            balanceList = getOep8Balance2(address, assetName);
-                        }
+                    Oep8 oep8 = new Oep8();
+                    oep8.setSymbol(assetName);
+                    List<Oep8> oep8s = oep8Mapper.select(oep8);
+                    if (oep8s.size() > 0) {
+                        balanceList = getOep8Balance2(address, assetName);
                     }
                 }
             }
@@ -656,45 +651,6 @@ public class AddressServiceImpl implements IAddressService {
 
         return balanceList;
     }
-
-    /**
-     * get oep8 token
-     *
-     * @param address
-     * @return
-     */
-    private List<BalanceDto> getOep8Balance4OntoOld(String address, String assetName) {
-
-        List<BalanceDto> balanceList = new ArrayList<>();
-        initSDK();
-        //审核过的OEP8余额
-        if (Helper.isNotEmptyOrNull(assetName)) {
-            assetName = assetName + "%";
-        }
-        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
-        for (Map<String, String> map: oep8s) {
-            String contractHash = map.get("contractHash");
-            JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-
-            balanceList = getBalancesListFromJson(balanceArray);
-            BalanceDto balanceDto = BalanceDto.builder()
-                    .assetName("totalpumpkin")
-                    .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                    .balance(getTotalBalance(balanceList))
-                    .build();
-            balanceList.add(balanceDto);
-        }
-        return balanceList;
-    }
-
-    private BigDecimal getTotalBalance(List<BalanceDto> balances) {
-        BigDecimal total = new BigDecimal("0");
-        for (BalanceDto balance: balances) {
-            total.add(balance.getBalance());
-        }
-        return total;
-    }
-
 
     /**
      * get oep8 token
