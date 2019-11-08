@@ -74,9 +74,6 @@ public class AddressServiceImpl implements IAddressService {
 
     private static final String BALANCESERVICE_VERSION = "1.0.0";
 
-    private static final Integer TIMESTAMP_20190630000000_UTC = 1561852800;
-
-
     @Override
     public ResponseBean queryAddressBalance(String address, String tokenType) {
 
@@ -704,31 +701,19 @@ public class AddressServiceImpl implements IAddressService {
      */
     private String calculateWaitingBoundOng(String address, String ont) {
 
-        Integer latestOntTransferTxTime = null;
-        //mysql 4.0.14+ bug
-        try {
-            latestOntTransferTxTime = txDetailMapper.selectLatestOntTransferTxTime(address);
-        } catch (Exception e) {
-            log.error("{} error...", Helper.currentMethod(), e);
-        }
+        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
 
-        if (Helper.isEmptyOrNull(latestOntTransferTxTime)) {
+        if (Helper.isEmptyOrNull(txtime)) {
             return "0";
         }
-        long now = System.currentTimeMillis() / 1000L;
-        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", latestOntTransferTxTime, now);
-        BigDecimal totalOng = new BigDecimal("0");
-        //before 20190630000000 UTC
-        if (latestOntTransferTxTime < TIMESTAMP_20190630000000_UTC) {
-            BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(5));
-            BigDecimal ong02 = new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
-            totalOng = ong01.add(ong02);
-        } else {
-            totalOng = new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
-        }
-        BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
-        return ong.toPlainString();
+        long now = System.currentTimeMillis() / 1000L;
+        log.info("txntime:{},now:{}", txtime, now);
+
+        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(ConstantParam.ONG_SECONDMAKE);
+        BigDecimal oxg = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
+
+        return oxg.toPlainString();
     }
 
     @Override
