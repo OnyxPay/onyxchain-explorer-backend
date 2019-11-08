@@ -54,9 +54,6 @@ public class ConstantParam {
 
     public static final String WAITBOUND_ONG = "waitboundoxg";
 
-    public static final String OEP8_PUMPKIN_PREFIX = "pumpkin";
-
-
     public static final BigDecimal ZERO = new BigDecimal("0");
 
 
