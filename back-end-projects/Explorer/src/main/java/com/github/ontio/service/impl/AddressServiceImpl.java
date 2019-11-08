@@ -154,7 +154,7 @@ public class AddressServiceImpl implements IAddressService {
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = sdk.getWaitBoundOng(address);
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -220,7 +220,7 @@ public class AddressServiceImpl implements IAddressService {
         balanceList.add(balanceDto1);
 
         //waiting bound ONG
-        String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+        String waitBoundOng = sdk.getWaitBoundOng(address);
         BalanceDto balanceDto2 = BalanceDto.builder()
                 .assetName(ConstantParam.WAITBOUND_ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -690,30 +690,6 @@ public class AddressServiceImpl implements IAddressService {
         }
     
         return new BigDecimal("0");
-    }
-
-    /**
-     * 计算待提取的ong
-     *
-     * @param address
-     * @param ont
-     * @return
-     */
-    private String calculateWaitingBoundOng(String address, String ont) {
-
-        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
-
-        if (Helper.isEmptyOrNull(txtime)) {
-            return "0";
-        }
-
-        long now = System.currentTimeMillis() / 1000L;
-        log.info("txntime:{},now:{}", txtime, now);
-
-        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(ConstantParam.ONG_SECONDMAKE);
-        BigDecimal oxg = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
-
-        return oxg.toPlainString();
     }
 
     @Override

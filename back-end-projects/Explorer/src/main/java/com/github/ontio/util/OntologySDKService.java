@@ -166,6 +166,18 @@ public class OntologySDKService {
         }
     }
 
+    public String getWaitBoundOng(String address) {
+        OntSdk ontSdk = getOntSdk();
+        try {
+            // it seems that waitboundong is the same that grantong.
+            return ontSdk.getConnect().getGrantOng(address);
+        } catch (Exception e) {
+            log.error("getWaitBoundOng error...", e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 根据dapp合约hash获取绑定的节点信息
      * @param contractHash
