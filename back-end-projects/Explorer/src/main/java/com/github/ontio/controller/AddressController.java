@@ -4,7 +4,6 @@ import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.common.ResponseTransactions;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.model.dto.TransferTxDto;

@@ -422,28 +422,34 @@ public class AddressServiceImpl implements IAddressService {
             String contractHash = map.get("contractHash");
 
             JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-            balanceList.addAll(getBalancesListFromJson(balanceArray));
+            balanceList.addAll(getBalancesListFromJson(balanceArray, contractHash));
         }
 
         return balanceList;
     }
 
-    private String decodeAssetName(String hexAssetName) {
-        try {
-            return new String(Hex.decodeHex(hexAssetName.toCharArray()));
-        } catch (DecoderException e) {
-            return "";
+    private String getAssetName(String tokenId, String contractHash) {
+        Oep8 oep8 = new Oep8();
+
+        oep8.setTokenId(tokenId);
+        oep8.setContractHash(contractHash);
+
+        List<Oep8> oep8s = oep8Mapper.select(oep8);
+        if (oep8s.size() != 0) {
+            return oep8s.get(0).getSymbol();
         }
+
+        return "";
     }
 
-    private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray) {
+    private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray, String contractHash) {
         List<BalanceDto> balances = new ArrayList<BalanceDto>();
 
         for (Object object: balancesJsonArray) {
             JSONArray balance = (JSONArray) object;
 
-            String hexSymbol = (String) balance.get(0);
-            String assetName = decodeAssetName(hexSymbol);
+            String tokenId = (String) balance.get(0);
+            String assetName = getAssetName(tokenId, contractHash);
             BigDecimal bigDecimalBalance = new BigDecimal((String) balance.get(1));
 
             if ((bigDecimalBalance).compareTo(ConstantParam.ZERO) == 0) {
@@ -665,7 +671,7 @@ public class AddressServiceImpl implements IAddressService {
         String symbol = oep8s.get(0).get("symbol");
 
         JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-        BigDecimal balance = getBalanceBySymbol(balanceArray, symbol);
+        BigDecimal balance = getBalanceBySymbol(balanceArray, symbol, contractHash);
 
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(symbol)
@@ -676,12 +682,12 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
-    private BigDecimal getBalanceBySymbol(JSONArray balanceArray, String symbol) {
+    private BigDecimal getBalanceBySymbol(JSONArray balanceArray, String symbol, String contractHash) {
         for (Object object: balanceArray) {
             JSONArray nestedArray = (JSONArray) object;
 
-            String hexSymbol = (String) nestedArray.get(0);
-            String assetName = decodeAssetName(hexSymbol);
+            String tokenId = (String) nestedArray.get(0);
+            String assetName = getAssetName(tokenId, contractHash);
             String balance = (String) nestedArray.get(1);
 
             if (assetName.equals(symbol)) {
