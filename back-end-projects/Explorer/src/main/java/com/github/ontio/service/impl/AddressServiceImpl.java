@@ -9,6 +9,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
@@ -437,7 +438,7 @@ public class AddressServiceImpl implements IAddressService {
             return oep8s.get(0).getSymbol();
         }
 
-        return "";
+        throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
     }
 
     private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray, String contractHash) {
@@ -446,13 +447,13 @@ public class AddressServiceImpl implements IAddressService {
         for (Object object: balancesJsonArray) {
             JSONArray balance = (JSONArray) object;
 
-            String tokenId = (String) balance.get(0);
-            String assetName = getAssetName(tokenId, contractHash);
             BigDecimal bigDecimalBalance = new BigDecimal((String) balance.get(1));
-
             if ((bigDecimalBalance).compareTo(ConstantParam.ZERO) == 0) {
                 continue;
             }
+
+            String tokenId = (String) balance.get(0);
+            String assetName = getAssetName(tokenId, contractHash);
             
             BalanceDto balanceDto = BalanceDto.builder()
                     .assetName(assetName)
