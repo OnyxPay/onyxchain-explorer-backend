@@ -54,9 +54,6 @@ public class ConstantParam {
 
     public static final String WAITBOUND_ONG = "waitboundoxg";
 
-    public static final String OEP8_PUMPKIN_PREFIX = "pumpkin";
-
-
     public static final BigDecimal ZERO = new BigDecimal("0");
 
 
@@ -155,8 +152,4 @@ public class ConstantParam {
 
 
     public static final String BALANCESERVICE_QUERYBALANCE_URL = "/api/v1/multibalance";
-
-    public static final String CHANNEL_ONTO = "onto";
-
-
 }

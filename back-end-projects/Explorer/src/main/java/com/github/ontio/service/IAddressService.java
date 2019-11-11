@@ -1,6 +1,7 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.common.ResponseTransactions;
 
 public interface IAddressService {
 
@@ -8,14 +9,7 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
-    ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName);
+    ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
-    ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
-
-    ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
-
-    ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType);
-
-    ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType);
-
+    ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
 }
