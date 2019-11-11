@@ -31,8 +31,6 @@ import com.github.ontio.util.OntologySDKService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 import lombok.extern.slf4j.Slf4j;
 
