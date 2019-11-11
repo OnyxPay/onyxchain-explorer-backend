@@ -19,6 +19,4 @@ public interface Oep8Mapper extends Mapper<Oep8> {
     List<Oep8DetailDto> selectOep8Tokens();
 
     Oep8DetailDto selectOep8TokenDetail(@Param("contractHash") String contractHash);
-
-
 }
