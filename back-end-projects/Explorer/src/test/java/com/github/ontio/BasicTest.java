@@ -26,7 +26,7 @@ public class BasicTest {
     public void calculateScore() {
 
 
-/*        String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse("8c15299cc6843e808b42f1ffb9cff7ec36f81ea1")).toBase58();
+/*      String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse("8c15299cc6843e808b42f1ffb9cff7ec36f81ea1")).toBase58();
         System.out.println("addr；"+contractAddress);*/
 
         int txnCount = 4003;
@@ -76,7 +76,7 @@ public class BasicTest {
         String result = ((JSONObject) obj).getString("Result");
         if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
 
-            Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
+           Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
            System.out.println("node_name:"+new String(Helper.hexToBytes(((String) map.get("node_name")))));
            System.out.println("node_pubkey:"+map.get("node_pubkey"));
         }
@@ -85,7 +85,6 @@ public class BasicTest {
 
     @Test
     public void dappBindedWalletTest() throws Exception {
-
 
         String dappContractHash = "5389914e9ad96cc8a15a3e961440334719270cf8";
         String contractHash = "939053a288f44eb560cad17c36df5ad34dafca2c";

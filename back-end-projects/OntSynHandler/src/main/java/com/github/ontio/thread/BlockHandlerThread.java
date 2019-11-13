@@ -41,8 +41,6 @@ import java.util.ArrayList;
 @Scope("prototype")
 public class BlockHandlerThread extends Thread {
 
-    private final String CLASS_NAME = this.getClass().getSimpleName();
-
     private final ParamsConfig paramsConfig;
     private final BlockHandleService blockManagementService;
     private final CurrentMapper currentMapper;

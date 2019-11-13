@@ -216,5 +216,8 @@ public class Helper {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
 
+    public static Long calculateTotalSupply() {
+        return (long) 0;
+    }
 
 }
