@@ -352,7 +352,7 @@ public class TxHandlerThread {
                 contractHash = paramsConfig.AUTH_CONTRACTHASH;
                 break;
             default:
-                contractHash = contractHash;
+                break;
         }
 
         return contractHash;
@@ -661,6 +661,19 @@ public class TxHandlerThread {
                 gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, payer, calledContractHash);
     }
 
+    private void updateTxDetails(TxDetail txDetail){
+        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+    }
+
+    private String parseAddress(String address) {
+        if (40 == address.length()) {
+            return Address.parse(address).toBase58();
+        }
+        return address;
+    }
+
 
     /**
      * 处理oep8交易
@@ -685,9 +698,7 @@ public class TxHandlerThread {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
 
-            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-            ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+            updateTxDetails(txDetail);
             return;
         }
 
@@ -696,6 +707,7 @@ public class TxHandlerThread {
         String toAddress = (String) stateArray.get(2);
         String tokenId = (String) stateArray.get(3);
         JSONObject oep8Obj = (JSONObject) ConstantParam.OEP8MAP.get(contractAddress + "-" + tokenId);
+
         if ("00".equals(fromAddress) && stateSize == 2) {
             // mint方法即增加发行量方法, 区分标志：fromAddress为“00”，同时stateSize为2
             Oep8 oep8 = Oep8.builder()
@@ -707,12 +719,8 @@ public class TxHandlerThread {
             oep8Mapper.updateByPrimaryKeySelective(oep8);
         }
 
-        if (40 == fromAddress.length()) {
-            fromAddress = Address.parse(fromAddress).toBase58();
-        }
-        if (40 == toAddress.length()) {
-            toAddress = Address.parse(toAddress).toBase58();
-        }
+        fromAddress = parseAddress(fromAddress);
+        toAddress = parseAddress(toAddress);
 
         BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
@@ -720,9 +728,7 @@ public class TxHandlerThread {
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
-        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+        updateTxDetails(txDetail);
     }
 
     /**
@@ -751,20 +757,12 @@ public class TxHandlerThread {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
 
-            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-            ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+            updateTxDetails(txDetail);
             return;
         }
 
-        String fromAddress = (String) stateArray.get(1);
-        if (40 == fromAddress.length()) {
-            fromAddress = Address.parse(fromAddress).toBase58();
-        }
-        String toAddress = (String) stateArray.get(2);
-        if (40 == toAddress.length()) {
-            toAddress = Address.parse(toAddress).toBase58();
-        }
+        String fromAddress = parseAddress((String) stateArray.get(1));
+        String toAddress = parseAddress((String) stateArray.get(2));
 
         String assetName = "";
         BigDecimal amount = ConstantParam.ZERO;
@@ -814,10 +812,7 @@ public class TxHandlerThread {
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-
-        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+        updateTxDetails(txDetail);
     }
 
     private void handleOep4TransferTxn(JSONArray stateArray, int txType, String txHash, int blockHeight,
@@ -831,9 +826,7 @@ public class TxHandlerThread {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
             TxDetail txDetail = generateTransaction(fromAddress, toAddress, "", eventAmount, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
-            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-            ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+            updateTxDetails(txDetail);
             return;
         }
 
@@ -885,10 +878,7 @@ public class TxHandlerThread {
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
-
-        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+        updateTxDetails(txDetail);
     }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {
