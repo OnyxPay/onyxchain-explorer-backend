@@ -703,29 +703,25 @@ public class TxHandlerThread {
         }
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-        String fromAddress = (String) stateArray.get(1);
-        String toAddress = (String) stateArray.get(2);
+        String fromAddress = parseAddress((String) stateArray.get(1));
+        String toAddress = parseAddress((String) stateArray.get(2));
         String tokenId = (String) stateArray.get(3);
         JSONObject oep8Obj = (JSONObject) ConstantParam.OEP8MAP.get(contractAddress + "-" + tokenId);
 
-        if ("00".equals(fromAddress) && stateSize == 2) {
-            // mint方法即增加发行量方法, 区分标志：fromAddress为“00”，同时stateSize为2
+        if ("00".equals(fromAddress) || "00".equals(toAddress)) {
             Oep8 oep8 = Oep8.builder()
                     .contractHash(contractAddress)
-                    .tokenId((String) stateArray.get(3))
+                    .tokenId(tokenId)
                     .totalSupply(commonService.getOep8TotalSupply(tokenId))
                     .build();
-            //在子线程直接更新，不批量更新
             oep8Mapper.updateByPrimaryKeySelective(oep8);
         }
 
-        fromAddress = parseAddress(fromAddress);
-        toAddress = parseAddress(toAddress);
+        Long amount = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue();
+        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
 
-        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
-        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
-
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
+        BigDecimal bigDecimalAmount = new BigDecimal(amount);
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), bigDecimalAmount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
         updateTxDetails(txDetail);
