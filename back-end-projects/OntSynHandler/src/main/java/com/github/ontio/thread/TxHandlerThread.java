@@ -762,46 +762,25 @@ public class TxHandlerThread {
 
         String assetName = "";
         BigDecimal amount = ConstantParam.ZERO;
-        //云斗龙特殊处理,记录birth出来的云斗龙信息
-        if ("HyperDragons".equalsIgnoreCase(oep5Obj.getString("name"))) {
-            // 如果是birth方法，tokenid位置在2；如果是transfer方法，tokenid位置在3
-            String dragonId = "";
-            if ("birth".equalsIgnoreCase(action)) {
-                dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
-                fromAddress = "";
-                toAddress = "";
 
-                Oep5Dragon oep5Dragon = Oep5Dragon.builder()
-                        .contractHash(contractAddress)
-                        .assetName(ConstantParam.ASSET_NAME_DRAGON + dragonId)
-                        .jsonUrl(getDragonUrl(contractAddress, dragonId))
-                        .build();
-                ConstantParam.BATCHBLOCKDTO.getOep5Dragons().add(oep5Dragon);
-            } else {
-                amount = ConstantParam.ONE;
-                dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
-            }
-            assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
-        } else {
-            //OEP5初始化交易，更新total_supply。且tokenid位置在2
-            if ("birth".equalsIgnoreCase(action)) {
-                assetName = oep5Obj.getString("symbol") + stateArray.get(2);
-                fromAddress = "";
-                toAddress = "";
+        //OEP5初始化交易，更新total_supply。且tokenid位置在2
+        if ("birth".equalsIgnoreCase(action)) {
+            assetName = oep5Obj.getString("symbol") + stateArray.get(2);
+            fromAddress = "";
+            toAddress = "";
 
-                Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
-                Oep5 oep5 = Oep5.builder()
-                        .contractHash(contractAddress)
-                        .totalSupply(totalSupply)
-                        .build();
-                //在子线程直接更新，不批量更新
-                oep5Mapper.updateByPrimaryKeySelective(oep5);
+            Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
+            Oep5 oep5 = Oep5.builder()
+                    .contractHash(contractAddress)
+                    .totalSupply(totalSupply)
+                    .build();
+            //在子线程直接更新，不批量更新
+            oep5Mapper.updateByPrimaryKeySelective(oep5);
 
-            } else if ("transfer".equalsIgnoreCase(action)) {
-                //transfer方法，tokenid在位置3
-                assetName = oep5Obj.getString("symbol") + stateArray.get(3);
-                amount = ConstantParam.ONE;
-            }
+        } else if ("transfer".equalsIgnoreCase(action)) {
+            //transfer方法，tokenid在位置3
+            assetName = oep5Obj.getString("symbol") + stateArray.get(3);
+            amount = ConstantParam.ONE;
         }
 
         log.info("OEP5TransferTx:fromaddress:{}, toaddress:{}, assetName:{}", fromAddress, toAddress, assetName);
@@ -843,30 +822,6 @@ public class TxHandlerThread {
 
             eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
-        }
-
-        if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
-            if (action.equalsIgnoreCase("IncreasePAX")) {
-                try {
-                    fromAddress = paramsConfig.PAX_CONTRACTHASH;
-                    toAddress = Address.parse((String) stateArray.get(1)).toBase58();
-                    eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
-                } catch (Exception e) {
-                    log.info("Parsing increase PAX event failed in transaction {}", txHash);
-                }
-                log.info("Parsing increase PAX event: from {} to {} amount {}", fromAddress, toAddress, eventAmount);
-            }
-
-            if (action.equalsIgnoreCase("DecreasePAX")) {
-                try {
-                    fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
-                    toAddress = paramsConfig.PAX_CONTRACTHASH;
-                    eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
-                } catch (Exception e) {
-                    log.info("Parsing increase PAX event failed in transaction {}", txHash);
-                }
-                log.info("Parsing decrease PAX event: from {} to {} amount {}", fromAddress, toAddress, eventAmount);
-            }
         }
 
         String assetName = oep4Obj.getString("symbol");
