@@ -56,8 +56,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.ontio</groupId>
-			<artifactId>ontology-sdk-java</artifactId>
-			<version>1.0.10</version>
+			<artifactId>onyxchain-sdk-java</artifactId>
+			<version>1.0.15</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
