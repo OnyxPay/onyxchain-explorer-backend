@@ -240,11 +240,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException e) {
                 log.error("get blockheight thread can't work,error {} ", e);
                 throw new Exception(e);
@@ -274,11 +273,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getBlockJsonByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -312,11 +310,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getTxEventLogsByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -325,46 +322,6 @@ public class CommonService {
 
         return txEventLogArray;
     }
-
-
-    /**
-     * get oep5 total supply
-     *
-     * @return
-     * @throws Exception
-     */
-    public Long getOep5TotalSupply(String contractAddress) {
-
-        ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep5TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-            } catch (Exception ex) {
-                log.error("getOep5TotalSupply error {} ", ex);
-                break;
-            }
-        }
-        return totalSupply;
-    }
-
 
     /**
      * get the event log by txhash
@@ -386,11 +343,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getEventLogByTxHash thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -438,17 +394,51 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (Exception ex) {
                 log.error("getContractInfoByTxHash thread can't work,error {} ", ex);
                 break;
             }
         }
         return contractObj;
+    }
+
+     /**
+     * get oep5 total supply
+     *
+     * @return
+     * @throws Exception
+     */
+    public Long getOep5TotalSupply(String contractAddress) {
+
+        ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
+        Long totalSupply = 0L;
+        int tryTime = 1;
+        while (true) {
+            try {
+                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
+                break;
+            } catch (ConnectorException ex) {
+                log.error("getOep5TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+                    switchNode();
+                    tryTime++;
+                    continue;
+                }
+
+                tryTime++;
+                sleep(1000);
+                continue;
+            } catch (Exception ex) {
+                log.error("getOep5TotalSupply error {} ", ex);
+                break;
+            }
+        }
+
+        return totalSupply;
     }
 
     /**
@@ -471,21 +461,26 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
                 }
+
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (Exception ex) {
                 log.error("getOep8TotalSupply thread can't work,error {} ", ex);
                 break;
             }
         }
+
         return totalSupply;
+    }
+
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
