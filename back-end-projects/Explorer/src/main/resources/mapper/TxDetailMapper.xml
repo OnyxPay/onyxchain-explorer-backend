@@ -93,7 +93,7 @@
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
         WITH table_union_with_row_index AS (
-            SELECT row_number() over(order by tx_index) row_index,
+            SELECT row_number() over(order by tx_time DESC) row_index,
                    <include refid="transferTxDetailColumns" />
             FROM
             (
