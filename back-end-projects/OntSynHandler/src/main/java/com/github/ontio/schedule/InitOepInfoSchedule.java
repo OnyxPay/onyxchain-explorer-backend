@@ -51,6 +51,7 @@ public class InitOepInfoSchedule {
         oep4s.forEach(item -> {
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
+            obj.put("name", item.getName());
             obj.put("decimals", item.getDecimals());
             ConstantParam.OEP4MAP.put(item.getContractHash(), obj);
             ConstantParam.OEP4CONTRACTS.add(item.getContractHash());
