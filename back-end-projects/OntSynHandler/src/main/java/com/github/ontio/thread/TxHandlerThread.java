@@ -16,40 +16,35 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.github.ontio.thread;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.mapper.ContractMapper;
+import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.OntIdEventDesEnum;
 import com.github.ontio.model.common.TransactionTypeEnum;
 import com.github.ontio.model.dao.Contract;
+import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep5Dragon;
 import com.github.ontio.model.dao.Oep8;
 import com.github.ontio.model.dao.OntidTxDetail;
 import com.github.ontio.model.dao.TxDetail;
 import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.service.CommonService;
-import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,13 +76,17 @@ public class TxHandlerThread {
 
     private final Oep5Mapper oep5Mapper;
 
+    private final Oep4Mapper oep4Mapper;
+
     @Autowired
-    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, CommonService commonService, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper) {
+    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, CommonService commonService, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper,
+                           Oep4Mapper oep4Mapper) {
         this.paramsConfig = paramsConfig;
         this.contractMapper = contractMapper;
         this.commonService = commonService;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
+        this.oep4Mapper = oep4Mapper;
     }
 
     @Async
@@ -802,6 +801,16 @@ public class TxHandlerThread {
 
         String fromAddress = parseAddress((String) stateArray.get(1));
         String toAddress = parseAddress((String) stateArray.get(2));
+
+        if ("00".equals(fromAddress) || "00".equals(toAddress)) {
+            Long totalSupply = commonService.getOep4TotalSupply(contractHash);
+            Oep4 oep4 = Oep4.builder()
+                    .contractHash(contractHash)
+                    .totalSupply(totalSupply)
+                    .build();
+
+            oep4Mapper.updateByPrimaryKeySelective(oep4);
+        }
 
         BigDecimal eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
         log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
