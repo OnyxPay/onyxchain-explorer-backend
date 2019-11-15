@@ -699,10 +699,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
-        int startIndex = (pageNumber - 1) * pageSize + 1;
-        int endIndex = startIndex + pageSize;
-
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, startIndex, endIndex);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, pageNumber - 1, pageSize);
         List<TransferTxDto> returnList = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList,
@@ -711,7 +708,6 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
-
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
