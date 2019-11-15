@@ -54,11 +54,12 @@ public class Oep4 {
     private Date updateTime;
 
     @Builder
-    public Oep4(String contractHash, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+    public Oep4(String contractHash, String name, Long totalSupply, String symbol, Integer decimals, Date createTime, Boolean auditFlag, Date updateTime) {
         this.contractHash = contractHash;
         this.name = name;
         this.totalSupply = totalSupply;
         this.symbol = symbol;
+        this.decimals = decimals;
         this.createTime = createTime;
         this.auditFlag = auditFlag;
         this.updateTime = updateTime;
