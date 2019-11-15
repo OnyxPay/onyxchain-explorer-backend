@@ -70,6 +70,7 @@ public class InitOepInfoSchedule {
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
             obj.put("name", item.getName());
+            obj.put("decimals", item.getDecimals());
             ConstantParam.OEP8MAP.put((String) item.getContractHash() + "-" + (String) item.getTokenId(), obj);
             ConstantParam.OEP8CONTRACTS.add((String) item.getContractHash());
         });

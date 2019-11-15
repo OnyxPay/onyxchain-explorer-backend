@@ -60,12 +60,13 @@ public class Oep8 {
     private Date updateTime;
 
     @Builder
-    public Oep8(String contractHash, String tokenId, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+    public Oep8(String contractHash, String tokenId, String name, Long totalSupply, String symbol, Integer decimals, Date createTime, Boolean auditFlag, Date updateTime) {
         this.contractHash = contractHash;
         this.tokenId = tokenId;
         this.name = name;
         this.totalSupply = totalSupply;
         this.symbol = symbol;
+        this.decimals = decimals;
         this.createTime = createTime;
         this.auditFlag = auditFlag;
         this.updateTime = updateTime;
@@ -163,6 +164,10 @@ public class Oep8 {
 
     public Integer getDecimals() {
         return decimals;
+    }
+
+    public void setDecimals(Integer decimals) {
+        this.decimals = decimals;
     }
 
     /**

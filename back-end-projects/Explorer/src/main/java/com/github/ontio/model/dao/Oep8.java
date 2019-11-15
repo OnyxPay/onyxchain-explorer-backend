@@ -151,6 +151,10 @@ public class Oep8 {
         return decimals;
     }
 
+    public void setDecimals(Integer decimals) {
+        this.decimals = decimals;
+    }
+
     /**
      * 获取创建时间，yyyy-MM-dd
      *
