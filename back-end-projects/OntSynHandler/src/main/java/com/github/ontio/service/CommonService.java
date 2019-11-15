@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.LongSupplier;
 
 /**
  * @author zhouq
@@ -406,73 +407,28 @@ public class CommonService {
         return contractObj;
     }
 
-     /**
-     * get oep5 total supply
-     *
-     * @return
-     * @throws Exception
-     */
-    public Long getOep5TotalSupply(String contractAddress) {
-
-        ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep5TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                }
-
-                tryTime++;
-                sleep(1000);
-                continue;
-            } catch (Exception ex) {
-                log.error("getOep5TotalSupply error {} ", ex);
-                break;
-            }
-        }
-
-        return totalSupply;
+    public Long getOep4TotalSupply(String contractAddress) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep4().setContractAddress(contractAddress);
+            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep4().queryTotalSupply());
+        };
+        return getTotalSupply(commonServiceFunction);
     }
 
-    /**
-     * 根据oep8的tokenId获取总量
-     *
-     * @param tokenId
-     * @return
-     */
-    public Long getOep8TotalSupply(String tokenId) {
+    public Long getOep5TotalSupply(String contractAddress) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
+            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
+        };
+        return getTotalSupply(commonServiceFunction);
+    }
 
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep8TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                }
-
-                tryTime++;
-                sleep(1000);
-                continue;
-            } catch (Exception ex) {
-                log.error("getOep8TotalSupply thread can't work,error {} ", ex);
-                break;
-            }
-        }
-
-        return totalSupply;
+    public Long getOep8TotalSupply(String contractAddress, String tokenId) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractAddress);
+            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
+        };
+        return getTotalSupply(commonServiceFunction);
     }
 
     private void sleep(int milliseconds) {
@@ -483,5 +439,37 @@ public class CommonService {
         }
     }
 
+    private void switchNodeOrSleep(int attempt) {
+        if (attempt % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+            switchNode();
+        } else {
+            sleep(1000);
+        }
+    }
 
+    private Long getTotalSupply(CommonServiceFunction totalSupplyFunction) {
+        Long totalSupply = 0L;
+        int attempt = 1;
+
+        while (true) {
+            try {
+                return totalSupplyFunction.get();
+            } catch (ConnectorException ex) {
+                log.error("Common service error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+
+                switchNodeOrSleep(attempt);
+                attempt++;
+                continue;
+
+            } catch (Exception ex) {
+                log.error("Common service error {} ", ex);
+                return totalSupply;
+            }
+        }
+    }
+
+    @FunctionalInterface
+    public interface CommonServiceFunction {
+        Long get() throws ConnectorException, Exception;
+    }
 }

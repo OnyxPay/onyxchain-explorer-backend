@@ -712,7 +712,7 @@ public class TxHandlerThread {
             Oep8 oep8 = Oep8.builder()
                     .contractHash(contractAddress)
                     .tokenId(tokenId)
-                    .totalSupply(commonService.getOep8TotalSupply(tokenId))
+                    .totalSupply(commonService.getOep8TotalSupply(contractAddress, tokenId))
                     .build();
             oep8Mapper.updateByPrimaryKeySelective(oep8);
         }
