@@ -39,6 +39,8 @@ public class Oep8 {
      */
     private String symbol;
 
+    private Integer decimals;
+
     /**
      * 创建时间，yyyy-MM-dd
      */
@@ -157,6 +159,10 @@ public class Oep8 {
      */
     public void setSymbol(String symbol) {
         this.symbol = symbol == null ? null : symbol.trim();
+    }
+
+    public Integer getDecimals() {
+        return decimals;
     }
 
     /**
