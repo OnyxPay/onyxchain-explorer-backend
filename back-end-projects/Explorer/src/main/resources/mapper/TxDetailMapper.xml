@@ -95,24 +95,17 @@
         SELECT *
         FROM
         (
-            SELECT <include refid="transferTxDetailColumns" />
+            SELECT
+                dense_rank() OVER (ORDER BY block_height DESC, block_index ASC) - 1 row_index,
+                <include refid="transferTxDetailColumns" />
             FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-              UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
+            WHERE (from_address = #{address} or to_address = #{address})
             <if test="assetName != '' and assetName != null">
                 and asset_name = #{assetName}
             </if>
             AND event_type IN (2, 3)
         ) a
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
-        LIMIT #{startIndex}, #{pageSize}
+        WHERE row_index BETWEEN #{startIndex} AND (#{startIndex} + #{pageSize} - 1);
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
@@ -141,7 +134,7 @@
     </select>
 
     <select id="selectTransferTxCount" resultType="java.lang.Integer">
-        SELECT count(1)
+        SELECT count(distinct tx_hash)
         FROM tbl_tx_detail
         WHERE (from_address = #{address} OR to_address = #{address}) 
         <if test="assetName != '' and assetName != null">

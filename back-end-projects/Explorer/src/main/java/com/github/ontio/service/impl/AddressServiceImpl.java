@@ -699,58 +699,18 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseTransactions queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+        int startIndex = (pageNumber - 1) * pageSize;
 
-        List<TransferTxDto> returnList = new ArrayList<>();
-        //查询前（pageNumber * pageSize * 3）条记录
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, pageNumber * pageSize * 3);
-        //合并和格式化转账交易记录
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
-
-        if (formattedTransferTxDtos.size() > 0 && formattedTransferTxDtos.size() < pageSize * pageNumber) {
-            //合并和格式化转账交易记录数 < （pageNumber * pageSize），根据总记录数再重新查询所有的记录
-            int transferTxTotal = txDetailMapper.selectTransferTxCount(address, "");
-            if (transferTxTotal > pageNumber * pageSize * 3) {
-                //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
-                List<TransferTxDto> transferTxDtos2 = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, transferTxTotal);
-                List<TransferTxDto> formattedTransferTxDtos2 = formatTransferTxDtos(transferTxDtos2);
-
-                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos2);
-            } else {
-                //总的交易数 < （pageNumber * pageSize * 3），直接根据请求条数进行分页
-                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
-            }
-        } else {
-            //格式化后的txlist条数满足分页条件，直接根据请求条数参数进行分页
-            //根据分页确认start，end=start+pageSize
-            returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
-        }
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, startIndex, pageSize);
+        List<TransferTxDto> returnList = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList,
                                         txDetailMapper.selectTransferTxCount(address, assetName));
     }
 
-
-    /**
-     * 获取分页后的转账交易列表
-     *
-     * @param pageNumber
-     * @param pageSize
-     * @param formattedTransferTxDtos
-     * @return
-     */
-    private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize, List<TransferTxDto> formattedTransferTxDtos) {
-
-        int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageNumber - 1) * pageSize;
-        int end = (pageSize + start) > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageSize + start);
-
-        return formattedTransferTxDtos.subList(start, end);
-    }
-
     @Override
     public ResponseTransactions queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
-
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseTransactions(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos,
