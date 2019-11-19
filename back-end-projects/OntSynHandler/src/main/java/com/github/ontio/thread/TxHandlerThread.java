@@ -728,9 +728,6 @@ public class TxHandlerThread {
             oep8Mapper.updateByPrimaryKeySelective(oep8);
         }
 
-        Long amount = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue();
-        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
-
         BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
         Integer decimals = oep8Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.scaleByPowerOfTen(-decimals);
