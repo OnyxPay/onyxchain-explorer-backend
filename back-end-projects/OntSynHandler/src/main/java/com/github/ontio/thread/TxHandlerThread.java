@@ -19,7 +19,6 @@
 package com.github.ontio.thread;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -828,7 +827,6 @@ public class TxHandlerThread {
         BigDecimal eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
         log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
 
-        String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.scaleByPowerOfTen(-decimals);
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep4Obj.getString("name"), amount, txType, txHash, blockHeight,
