@@ -41,6 +41,8 @@ public class Oep8 {
      */
     private String symbol;
 
+    private Integer decimals;
+
     /**
      * 创建时间，yyyy-MM-dd
      */
@@ -60,12 +62,13 @@ public class Oep8 {
     private Date updateTime;
 
     @Builder
-    public Oep8(String contractHash, String tokenId, String name, BigDecimal totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+    public Oep8(String contractHash, String tokenId, String name, BigDecimal totalSupply, String symbol, Integer decimals, Date createTime, Boolean auditFlag, Date updateTime) {
         this.contractHash = contractHash;
         this.tokenId = tokenId;
         this.name = name;
         this.totalSupply = totalSupply;
         this.symbol = symbol;
+        this.decimals = decimals;
         this.createTime = createTime;
         this.auditFlag = auditFlag;
         this.updateTime = updateTime;
@@ -159,6 +162,14 @@ public class Oep8 {
      */
     public void setSymbol(String symbol) {
         this.symbol = symbol == null ? null : symbol.trim();
+    }
+
+    public Integer getDecimals() {
+        return decimals;
+    }
+
+    public void setDecimals(Integer decimals) {
+        this.decimals = decimals;
     }
 
     /**

@@ -427,18 +427,19 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
-    private String getAssetName(String tokenId, String contractHash) {
+    private Oep8 getOep8(String tokenId, String contractHash) {
         Oep8 oep8 = new Oep8();
 
         oep8.setTokenId(tokenId);
         oep8.setContractHash(contractHash);
 
         List<Oep8> oep8s = oep8Mapper.select(oep8);
-        if (oep8s.size() != 0) {
-            return oep8s.get(0).getSymbol();
+        if (oep8s.isEmpty()) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (oep8s.size() > 1) {
+            log.warn("getOep8: extra configurations for constractHash:%s tokenId:%s", contractHash, tokenId);
         }
-
-        throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        return oep8s.get(0);
     }
 
     private List<BalanceDto> getBalancesListFromJson(JSONArray balancesJsonArray, String contractHash) {
@@ -453,12 +454,12 @@ public class AddressServiceImpl implements IAddressService {
             }
 
             String tokenId = (String) balance.get(0);
-            String assetName = getAssetName(tokenId, contractHash);
-            
+            Oep8 oep8 = getOep8(tokenId, contractHash);
+
             BalanceDto balanceDto = BalanceDto.builder()
-                    .assetName(assetName)
+                    .assetName(oep8.getSymbol())
                     .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                    .balance(bigDecimalBalance)
+                    .balance(bigDecimalBalance.scaleByPowerOfTen(-oep8.getDecimals()))
                     .build();
             balances.add(balanceDto);
         }
@@ -665,36 +666,40 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(inputSymbol);
+        if (oep8s.isEmpty()) {
+            return balanceList;
+        } else if (oep8s.size() > 0) {
+            log.warn("getOep8Balance2: ambiguous configurations for inputSymbol:%s", inputSymbol);
+        }
 
-        String contractHash = oep8s.get(0).get("contractHash");
-        String symbol = oep8s.get(0).get("symbol");
+        Map<String, String> oep8 = oep8s.get(0);
+        String contractHash = oep8.get("contractHash");
+        String tokenId = oep8.get("tokenId");
+        Oep8 oep8Info = getOep8(tokenId, contractHash);
 
         JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
-        BigDecimal balance = getBalanceBySymbol(balanceArray, symbol, contractHash);
+        BigDecimal balance = getBalanceByTokenId(balanceArray, tokenId);
 
         BalanceDto balanceDto = BalanceDto.builder()
-                .assetName(symbol)
+                .assetName(oep8Info.getSymbol())
                 .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                .balance(balance)
+                .balance(balance.scaleByPowerOfTen(-oep8Info.getDecimals()))
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
     }
 
-    private BigDecimal getBalanceBySymbol(JSONArray balanceArray, String symbol, String contractHash) {
+    private BigDecimal getBalanceByTokenId(JSONArray balanceArray, String tokenId) {
         for (Object object: balanceArray) {
             JSONArray nestedArray = (JSONArray) object;
 
-            String tokenId = (String) nestedArray.get(0);
-            String assetName = getAssetName(tokenId, contractHash);
-            String balance = (String) nestedArray.get(1);
-
-            if (assetName.equals(symbol)) {
+            if (tokenId.equals((String) nestedArray.get(0))) {
+                String balance = (String) nestedArray.get(1);
                 return new BigDecimal(balance);
             }
         }
-    
-        return new BigDecimal("0");
+
+        return BigDecimal.ZERO;
     }
 
     @Override

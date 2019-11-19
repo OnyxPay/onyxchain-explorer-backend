@@ -731,8 +731,12 @@ public class TxHandlerThread {
         Long amount = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue();
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
 
-        BigDecimal bigDecimalAmount = new BigDecimal(amount);
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), bigDecimalAmount, txType, txHash, blockHeight,
+        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
+        Integer decimals = oep8Obj.getInteger("decimals");
+        BigDecimal amount = eventAmount.scaleByPowerOfTen(-decimals);
+        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
+
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
         updateTxDetailsOep8(txDetail);
@@ -829,9 +833,8 @@ public class TxHandlerThread {
 
         String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
-        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
-
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+        BigDecimal amount = eventAmount.scaleByPowerOfTen(-decimals);
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep4Obj.getString("name"), amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
         updateTxDetailsOep4(txDetail);
     }
