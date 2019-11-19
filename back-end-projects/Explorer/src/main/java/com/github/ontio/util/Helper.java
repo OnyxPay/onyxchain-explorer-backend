@@ -215,9 +215,4 @@ public class Helper {
     public static String currentMethod() {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
-
-    public static Long calculateTotalSupply() {
-        return (long) 0;
-    }
-
 }
