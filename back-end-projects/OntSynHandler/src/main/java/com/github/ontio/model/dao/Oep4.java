@@ -1,5 +1,6 @@
 package com.github.ontio.model.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -23,7 +24,7 @@ public class Oep4 {
      * OEP4代币总量
      */
     @Column(name = "total_supply")
-    private Long totalSupply;
+    private BigDecimal totalSupply;
 
     /**
      * OEP4代币符号
@@ -54,7 +55,7 @@ public class Oep4 {
     private Date updateTime;
 
     @Builder
-    public Oep4(String contractHash, String name, Long totalSupply, String symbol, Integer decimals, Date createTime, Boolean auditFlag, Date updateTime) {
+    public Oep4(String contractHash, String name, BigDecimal totalSupply, String symbol, Integer decimals, Date createTime, Boolean auditFlag, Date updateTime) {
         this.contractHash = contractHash;
         this.name = name;
         this.totalSupply = totalSupply;
@@ -106,7 +107,7 @@ public class Oep4 {
      *
      * @return total_supply - OEP4代币总量
      */
-    public Long getTotalSupply() {
+    public BigDecimal getTotalSupply() {
         return totalSupply;
     }
 
@@ -115,7 +116,7 @@ public class Oep4 {
      *
      * @param totalSupply OEP4代币总量
      */
-    public void setTotalSupply(Long totalSupply) {
+    public void setTotalSupply(BigDecimal totalSupply) {
         this.totalSupply = totalSupply;
     }
 

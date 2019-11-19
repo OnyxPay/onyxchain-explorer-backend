@@ -5,6 +5,8 @@ import lombok.Builder;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Table(name = "tbl_oep8")
@@ -32,7 +34,7 @@ public class Oep8 {
      * OEP8代币总量
      */
     @Column(name = "total_supply")
-    private Long totalSupply;
+    private BigDecimal totalSupply;
 
     /**
      * OEP8代币符号
@@ -58,7 +60,7 @@ public class Oep8 {
     private Date updateTime;
 
     @Builder
-    public Oep8(String contractHash, String tokenId, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+    public Oep8(String contractHash, String tokenId, String name, BigDecimal totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
         this.contractHash = contractHash;
         this.tokenId = tokenId;
         this.name = name;
@@ -128,7 +130,7 @@ public class Oep8 {
      *
      * @return total_supply - OEP8代币总量
      */
-    public Long getTotalSupply() {
+    public BigDecimal getTotalSupply() {
         return totalSupply;
     }
 
@@ -137,7 +139,7 @@ public class Oep8 {
      *
      * @param totalSupply OEP8代币总量
      */
-    public void setTotalSupply(Long totalSupply) {
+    public void setTotalSupply(BigDecimal totalSupply) {
         this.totalSupply = totalSupply;
     }
 

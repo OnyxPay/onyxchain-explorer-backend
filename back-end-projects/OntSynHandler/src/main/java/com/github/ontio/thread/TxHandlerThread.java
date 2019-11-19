@@ -777,7 +777,7 @@ public class TxHandlerThread {
         if ("00".equals(fromAddress) || "00".equals(toAddress)) {
             assetName = oep5Obj.getString("symbol") + stateArray.get(2);
 
-            Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
+            BigDecimal totalSupply = commonService.getOep5TotalSupply(contractAddress);
             Oep5 oep5 = Oep5.builder()
                     .contractHash(contractAddress)
                     .totalSupply(totalSupply)
@@ -815,7 +815,7 @@ public class TxHandlerThread {
         String toAddress = parseAddress((String) stateArray.get(2));
 
         if ("00".equals(fromAddress) || "00".equals(toAddress)) {
-            Long totalSupply = commonService.getOep4TotalSupply(contractHash);
+            BigDecimal totalSupply = commonService.getOep4TotalSupply(contractHash);
             Oep4 oep4 = Oep4.builder()
                     .contractHash(contractHash)
                     .totalSupply(totalSupply)

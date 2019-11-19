@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -406,26 +407,26 @@ public class CommonService {
         return contractObj;
     }
 
-    public Long getOep4TotalSupply(String contractAddress) {
+    public BigDecimal getOep4TotalSupply(String contractAddress) {
         CommonServiceFunction commonServiceFunction = () -> {
             ConstantParam.ONT_SDKSERVICE.neovm().oep4().setContractAddress(contractAddress);
-            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep4().queryTotalSupply());
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep4().queryTotalSupply());
         };
         return getTotalSupply(commonServiceFunction);
     }
 
-    public Long getOep5TotalSupply(String contractAddress) {
+    public BigDecimal getOep5TotalSupply(String contractAddress) {
         CommonServiceFunction commonServiceFunction = () -> {
             ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
         };
         return getTotalSupply(commonServiceFunction);
     }
 
-    public Long getOep8TotalSupply(String contractAddress, String tokenId) {
+    public BigDecimal getOep8TotalSupply(String contractAddress, String tokenId) {
         CommonServiceFunction commonServiceFunction = () -> {
             ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractAddress);
-            return Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
         };
         return getTotalSupply(commonServiceFunction);
     }
@@ -446,8 +447,8 @@ public class CommonService {
         }
     }
 
-    private Long getTotalSupply(CommonServiceFunction totalSupplyFunction) {
-        Long totalSupply = 0L;
+    private BigDecimal getTotalSupply(CommonServiceFunction totalSupplyFunction) {
+        BigDecimal totalSupply = ConstantParam.ZERO;
         int attempt = 1;
 
         while (true) {
@@ -469,6 +470,6 @@ public class CommonService {
 
     @FunctionalInterface
     private interface CommonServiceFunction {
-        Long get() throws ConnectorException, Exception;
+        BigDecimal get() throws ConnectorException, Exception;
     }
 }
