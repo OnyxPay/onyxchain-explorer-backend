@@ -660,7 +660,19 @@ public class TxHandlerThread {
                 gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, payer, calledContractHash);
     }
 
-    private void updateTxDetails(TxDetail txDetail){
+    private void updateTxDetailsOep4(TxDetail txDetail){
+        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+    }
+
+    private void updateTxDetailsOep5(TxDetail txDetail){
+        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+    }
+
+    private void updateTxDetailsOep8(TxDetail txDetail){
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
         ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
@@ -697,7 +709,7 @@ public class TxHandlerThread {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
 
-            updateTxDetails(txDetail);
+            updateTxDetailsOep8(txDetail);
             return;
         }
 
@@ -723,7 +735,7 @@ public class TxHandlerThread {
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), bigDecimalAmount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
-        updateTxDetails(txDetail);
+        updateTxDetailsOep8(txDetail);
     }
 
     /**
@@ -752,7 +764,7 @@ public class TxHandlerThread {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
 
-            updateTxDetails(txDetail);
+            updateTxDetailsOep5(txDetail);
             return;
         }
 
@@ -784,7 +796,7 @@ public class TxHandlerThread {
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, ConstantParam.ONE, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-        updateTxDetails(txDetail);
+        updateTxDetailsOep5(txDetail);
     }
 
     private void handleOep4TransferTxn(JSONArray stateArray, int txType, String txHash, int blockHeight,
@@ -795,7 +807,7 @@ public class TxHandlerThread {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
-            updateTxDetails(txDetail);
+            updateTxDetailsOep4(txDetail);
             return;
         }
 
@@ -821,7 +833,7 @@ public class TxHandlerThread {
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
-        updateTxDetails(txDetail);
+        updateTxDetailsOep4(txDetail);
     }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {
