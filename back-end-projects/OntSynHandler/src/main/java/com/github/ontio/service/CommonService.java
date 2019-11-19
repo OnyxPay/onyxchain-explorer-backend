@@ -43,6 +43,7 @@ public class CommonService {
     private final BlockMapper blockMapper;
     private final ContractMapper contractMapper;
     private final TxDetailDailyMapper txDetailDailyMapper;
+    private int attempt = 1;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
@@ -439,8 +440,8 @@ public class CommonService {
         }
     }
 
-    private void switchNodeOrSleep(int attempt) {
-        if (attempt % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+    private void switchNodeOrSleep() {
+        if (this.attempt++ % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
             switchNode();
         } else {
             sleep(1000);
@@ -449,7 +450,7 @@ public class CommonService {
 
     private BigDecimal getTotalSupply(CommonServiceFunction totalSupplyFunction) {
         BigDecimal totalSupply = ConstantParam.ZERO;
-        int attempt = 1;
+        this.attempt = 1;
 
         while (true) {
             try {
@@ -457,8 +458,7 @@ public class CommonService {
             } catch (ConnectorException ex) {
                 log.error("Common service error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
 
-                switchNodeOrSleep(attempt);
-                attempt++;
+                switchNodeOrSleep();
                 continue;
 
             } catch (Exception ex) {
