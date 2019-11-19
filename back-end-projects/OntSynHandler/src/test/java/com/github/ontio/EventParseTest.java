@@ -29,7 +29,7 @@ public class EventParseTest {
         List<String> b = a.subList(2,2);
         System.out.println(""+b.size());
 
-       BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")).longValue());
+       BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")));
        System.out.println("amount:"+eventAmount);
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10,6)));
         System.out.println("amount:"+amount);
@@ -156,7 +156,7 @@ public class EventParseTest {
             toAddress = Address.parse(toAddress).toBase58();
         }
 
-        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))));
         System.out.println("fromaddress:"+fromAddress+",toaddress:"+toAddress+",amount:"+eventAmount);
 
     }

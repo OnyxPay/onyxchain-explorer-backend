@@ -727,7 +727,7 @@ public class TxHandlerThread {
             oep8Mapper.updateByPrimaryKeySelective(oep8);
         }
 
-        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
+        BigDecimal eventAmount = bigDecimalFromNeoVmData((String) stateArray.get(4));
         Integer decimals = oep8Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.scaleByPowerOfTen(-decimals);
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
@@ -824,7 +824,7 @@ public class TxHandlerThread {
             oep4Mapper.updateByPrimaryKeySelective(oep4);
         }
 
-        BigDecimal eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+        BigDecimal eventAmount = bigDecimalFromNeoVmData((String) stateArray.get(3));
         log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
 
         Integer decimals = oep4Obj.getInteger("decimals");
@@ -834,8 +834,8 @@ public class TxHandlerThread {
         updateTxDetailsOep4(txDetail);
     }
 
-    private BigDecimal BigDecimalFromNeoVmData(String value) {
-        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)).longValue());
+    private BigDecimal bigDecimalFromNeoVmData(String value) {
+        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)));
     }
 
     /**
