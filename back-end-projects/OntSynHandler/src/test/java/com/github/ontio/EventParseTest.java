@@ -29,7 +29,7 @@ public class EventParseTest {
         List<String> b = a.subList(2,2);
         System.out.println(""+b.size());
 
-       BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")).longValue());
+       BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")));
        System.out.println("amount:"+eventAmount);
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10,6)));
         System.out.println("amount:"+amount);
@@ -64,23 +64,9 @@ public class EventParseTest {
 
             JSONArray stateArray = (JSONArray) notifyObj.get("States");
 
-
             String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
             System.out.println("action:" + action);
-
-
-/*            String fromAddress = Address.parse(Helper.reverse((String) stateArray.get(1))).toBase58();
-            System.out.println("address:" + fromAddress);
-
-            String toAddress = Address.parse(Helper.reverse("27fa4812f657a9f320003d651a6c3bae7f908226")).toBase58();
-            System.out.println("toAddress:" + toAddress);
-
-*//*            BigDecimal amount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes("01")).longValue());
-            System.out.println("amount:"+amount);*//*
-
-            BigDecimal oepAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes("300731e700")).longValue());
-            System.out.println("oepAmount:" + oepAmount);*/
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -170,7 +156,7 @@ public class EventParseTest {
             toAddress = Address.parse(toAddress).toBase58();
         }
 
-        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))));
         System.out.println("fromaddress:"+fromAddress+",toaddress:"+toAddress+",amount:"+eventAmount);
 
     }

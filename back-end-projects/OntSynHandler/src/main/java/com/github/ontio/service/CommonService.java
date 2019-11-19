@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -42,6 +43,7 @@ public class CommonService {
     private final BlockMapper blockMapper;
     private final ContractMapper contractMapper;
     private final TxDetailDailyMapper txDetailDailyMapper;
+    private int attempt = 1;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
@@ -240,11 +242,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException e) {
                 log.error("get blockheight thread can't work,error {} ", e);
                 throw new Exception(e);
@@ -274,11 +275,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getBlockJsonByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -312,11 +312,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getTxEventLogsByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -325,46 +324,6 @@ public class CommonService {
 
         return txEventLogArray;
     }
-
-
-    /**
-     * get oep5 total supply
-     *
-     * @return
-     * @throws Exception
-     */
-    public Long getOep5TotalSupply(String contractAddress) {
-
-        ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep5TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-            } catch (Exception ex) {
-                log.error("getOep5TotalSupply error {} ", ex);
-                break;
-            }
-        }
-        return totalSupply;
-    }
-
 
     /**
      * get the event log by txhash
@@ -386,11 +345,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (IOException ex) {
                 log.error("getEventLogByTxHash thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -438,11 +396,10 @@ public class CommonService {
                     switchNode();
                     tryTime++;
                     continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
                 }
+                tryTime++;
+                sleep(1000);
+                continue;
             } catch (Exception ex) {
                 log.error("getContractInfoByTxHash thread can't work,error {} ", ex);
                 break;
@@ -451,42 +408,68 @@ public class CommonService {
         return contractObj;
     }
 
-    /**
-     * 根据oep8的tokenId获取总量
-     *
-     * @param tokenId
-     * @return
-     */
-    public Long getOep8TotalSupply(String tokenId) {
-
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep8TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-            } catch (Exception ex) {
-                log.error("getOep8TotalSupply thread can't work,error {} ", ex);
-                break;
-            }
-        }
-        return totalSupply;
+    public BigDecimal getOep4TotalSupply(String contractAddress) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep4().setContractAddress(contractAddress);
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep4().queryTotalSupply());
+        };
+        return getTotalSupply(commonServiceFunction);
     }
 
+    public BigDecimal getOep5TotalSupply(String contractAddress) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
+        };
+        return getTotalSupply(commonServiceFunction);
+    }
 
+    public BigDecimal getOep8TotalSupply(String contractAddress, String tokenId) {
+        CommonServiceFunction commonServiceFunction = () -> {
+            ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractAddress);
+            return new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
+        };
+        return getTotalSupply(commonServiceFunction);
+    }
+
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void switchNodeOrSleep() {
+        if (this.attempt++ % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+            switchNode();
+        } else {
+            sleep(1000);
+        }
+    }
+
+    private BigDecimal getTotalSupply(CommonServiceFunction totalSupplyFunction) {
+        BigDecimal totalSupply = ConstantParam.ZERO;
+        this.attempt = 1;
+
+        while (true) {
+            try {
+                return totalSupplyFunction.get();
+            } catch (ConnectorException ex) {
+                log.error("Common service error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+
+                switchNodeOrSleep();
+                continue;
+
+            } catch (Exception ex) {
+                log.error("Common service error {} ", ex);
+                return totalSupply;
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface CommonServiceFunction {
+        BigDecimal get() throws ConnectorException, Exception;
+    }
 }

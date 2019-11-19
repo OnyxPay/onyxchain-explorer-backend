@@ -35,7 +35,6 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
-
     @ApiOperation(value = "Get token list by token type")
     @GetMapping(value = "/{token_type}")
     public ResponseBean queryTokensByPage(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
@@ -47,7 +46,6 @@ public class TokenController {
         ResponseBean rs = tokenService.queryTokensByPage(tokenType, pageNumber, pageSize);
         return rs;
     }
-
 
     @ApiOperation(value = "Get token detail by token type and contracthash")
     @GetMapping(value = "/{token_type}/{contract_hash}")
