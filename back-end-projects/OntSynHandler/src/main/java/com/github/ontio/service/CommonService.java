@@ -468,7 +468,7 @@ public class CommonService {
     }
 
     @FunctionalInterface
-    public interface CommonServiceFunction {
+    private interface CommonServiceFunction {
         Long get() throws ConnectorException, Exception;
     }
 }
