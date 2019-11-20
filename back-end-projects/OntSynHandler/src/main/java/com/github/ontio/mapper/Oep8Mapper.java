@@ -9,5 +9,6 @@ import java.util.List;
 public interface Oep8Mapper extends Mapper<Oep8> {
 
     List<Oep8> selectApprovedRecords();
-
+    void copyContractDataToNewAddress(String oldContractAdress, String newContractAdress);
+    void resetAuditFlag(String contractAdress);
 }
