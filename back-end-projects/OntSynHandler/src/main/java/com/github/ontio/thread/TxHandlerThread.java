@@ -201,7 +201,6 @@ public class TxHandlerThread {
     private void processNotifyArray(JSONArray notifyArray, int txType, String txHash, int blockHeight, int blockTime,
                                     int indexInBlock, int confirmFlag, BigDecimal gasConsumed, String payer,
                                     String calledContractHash) throws Exception {
-        JSONArray stateArray = null;
         for (int i = 0; i < notifyArray.size(); i++) {
             JSONObject notifyObj = (JSONObject) notifyArray.get(i);
             String contractAddress = notifyObj.getString("ContractAddress");
@@ -214,7 +213,11 @@ public class TxHandlerThread {
                 continue;
             }
 
-            stateArray = (JSONArray) object;
+            JSONArray stateArray = (JSONArray) object;
+
+            if (isSuccessfulMigration(stateArray)) {
+                updateContractInfo(calledContractHash, contractAddress);
+            }
 
             if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
                 //transfer transaction
@@ -257,6 +260,25 @@ public class TxHandlerThread {
                         gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
             }
         }
+    }
+
+    private boolean isSuccessfulMigration(JSONArray stateArray) {
+        try {
+            String hexMessage = (String) stateArray.get(0);
+            String message = new String(com.github.ontio.common.Helper.hexToBytes(hexMessage));
+
+            if (message.contains(ConstantParam.MIGRATED_SUCCESSFULLY)) {
+                return true;
+            }
+
+            return false;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private void updateContractInfo(String oldContractAdress, String newContractAdress) {
+        //
     }
 
     /**

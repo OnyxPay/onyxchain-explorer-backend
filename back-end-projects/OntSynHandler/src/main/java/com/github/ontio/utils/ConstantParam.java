@@ -112,8 +112,6 @@ public final class ConstantParam {
 
     public static final String ASSET_NAME_ONG = "oxg";
 
-    public static final String ASSET_NAME_DRAGON = "HyperDragons: ";
-
     public static final String IS_OEP4TX = "is_oep4tx";
 
     public static final String IS_OEP5TX = "is_oep5tx";
@@ -130,5 +128,5 @@ public final class ConstantParam {
 
     public static final String AUTH_CONTRACTHASH = "24a15c6aed092dfaa711c4974caf1e9d307bf4b5";
 
-
+    public static final String MIGRATED_SUCCESSFULLY = "migrated successfully";
 }
