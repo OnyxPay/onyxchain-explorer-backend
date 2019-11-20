@@ -10,5 +10,5 @@ import java.util.List;
 public interface ContractMapper extends Mapper<Contract> {
 
     void batchInsert(List<Contract> list);
-
+    void copyContractDataToNewAddress(String oldContractAdress, String newContractAdress);
 }

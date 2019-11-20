@@ -86,5 +86,23 @@
       )
     </foreach>
   </insert>
+
+  <insert id="copyContractDataToNewAddress" parameterType="java.util.List">
+  INSERT INTO tbl_contract (contract_hash, name, abi, code,
+                            source_code, create_time, update_time, audit_flag,
+                            contact_info, description, type, logo,
+                            creator, address_count, tx_count, ont_sum, ong_sum,
+                            token_sum, category, dapp_name, dappstore_flag, total_reward,
+                            lastweek_reward)
+  (SELECT #{newContractAdress}, name, abi, code,
+           source_code, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), audit_flag,
+           contact_info, description, type, logo,
+           creator, address_count, tx_count, ont_sum, ong_sum,
+           token_sum, category, dapp_name, dappstore_flag, total_reward,
+           lastweek_reward
+
+   FROM tbl_contract WHERE tbl_contract.contract_hash = #{oldContractAdress});
+  </insert>
+
   
 </mapper>

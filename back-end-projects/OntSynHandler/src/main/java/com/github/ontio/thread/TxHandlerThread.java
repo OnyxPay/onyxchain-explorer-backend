@@ -215,8 +215,12 @@ public class TxHandlerThread {
 
             JSONArray stateArray = (JSONArray) object;
 
-            if (isSuccessfulMigration(stateArray)) {
-                updateContractInfo(calledContractHash, contractAddress);
+            if (isSuccessfulMigration(stateArray) &&
+                stateArray.size() >= 3 &&
+                stateArray.get(2) instanceof String) {
+
+                String newContractAddress = (String) stateArray.get(2);
+                updateContractInfo(contractAddress, newContractAddress);
             }
 
             if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
@@ -272,13 +276,13 @@ public class TxHandlerThread {
             }
 
             return false;
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    private void updateContractInfo(String oldContractAdress, String newContractAdress) {
-        //
+    private void updateContractInfo(String oldContractAddress, String newContractAddress) {
+        contractMapper.copyContractDataToNewAddress(oldContractAddress, newContractAddress);
     }
 
     /**
