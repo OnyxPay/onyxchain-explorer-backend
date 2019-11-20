@@ -284,6 +284,15 @@ public class TxHandlerThread {
     private void updateContractInfo(String oldContractAddress, String newContractAddress) {
         contractMapper.copyContractDataToNewAddress(oldContractAddress, newContractAddress);
         contractMapper.resetAuditFlag(oldContractAddress);
+
+        oep8Mapper.copyContractDataToNewAddress(oldContractAddress, newContractAddress);
+        oep8Mapper.resetAuditFlag(oldContractAddress);
+
+        oep5Mapper.copyContractDataToNewAddress(oldContractAddress, newContractAddress);
+        oep5Mapper.resetAuditFlag(oldContractAddress);
+
+        oep4Mapper.copyContractDataToNewAddress(oldContractAddress, newContractAddress);
+        oep4Mapper.resetAuditFlag(oldContractAddress);
     }
 
     /**
