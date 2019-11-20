@@ -30,5 +30,15 @@
     where audit_flag = 1
   </select>
 
+  <insert id="copyContractDataToNewAddress" parameterType="java.util.List">
+    INSERT INTO tbl_oep5 (contract_hash, name, total_supply, symbol, create_time, audit_flag, update_time)
+    (SELECT #{newContractAdress}, name, total_supply, symbol, CURRENT_TIMESTAMP, audit_flag, CURRENT_TIMESTAMP
+     FROM tbl_oep5 WHERE tbl_oep5.contract_hash = #{oldContractAdress});
+  </insert>
 
+  <update id="resetAuditFlag" parameterType="java.util.List">
+    UPDATE tbl_oep5
+    SET audit_flag = 0
+    WHERE contract_hash = #{contractAdress};
+  </update>
 </mapper>
