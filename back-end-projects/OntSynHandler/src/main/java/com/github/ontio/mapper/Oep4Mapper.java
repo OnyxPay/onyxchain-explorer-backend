@@ -10,5 +10,4 @@ public interface Oep4Mapper extends Mapper<Oep4> {
 
     List<Oep4> selectApprovedRecords();
     void copyContractDataToNewAddress(String oldContractAdress, String newContractAdress);
-    void resetAuditFlag(String contractAdress);
 }

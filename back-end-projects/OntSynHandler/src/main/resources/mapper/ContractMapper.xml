@@ -103,10 +103,4 @@
 
    FROM tbl_contract WHERE tbl_contract.contract_hash = #{oldContractAdress});
   </insert>
-
-  <update id="resetAuditFlag" parameterType="java.util.List">
-    UPDATE tbl_contract
-    SET audit_flag = 0
-    WHERE contract_hash = #{contractAdress};
-  </update>
 </mapper>

@@ -36,13 +36,7 @@
 
   <insert id="copyContractDataToNewAddress" parameterType="java.util.List">
     INSERT INTO tbl_oep8 (contract_hash, token_id, name, total_supply, symbol, create_time, audit_flag, update_time, decimals)
-    (SELECT #{newContractAdress}, token_id, name, total_supply, symbol, CURRENT_TIMESTAMP, audit_flag, CURRENT_TIMESTAMP, decimals
+    (SELECT #{newContractAdress}, token_id, name, total_supply, symbol, create_time, audit_flag, CURRENT_TIMESTAMP, decimals
     FROM tbl_oep8 WHERE tbl_oep8.contract_hash = #{oldContractAdress});
   </insert>
-
-  <update id="resetAuditFlag" parameterType="java.util.List">
-    UPDATE tbl_oep8
-    SET audit_flag = 0
-    WHERE contract_hash = #{contractAdress};
-  </update>
 </mapper>
