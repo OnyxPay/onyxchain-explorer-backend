@@ -10,11 +10,11 @@ server {
     }
 
     location /v2 {
-        proxy_pass http://ec2-3-17-77-100.us-east-2.compute.amazonaws.com:8080;
+        proxy_pass http://ec2-18-217-221-241.us-east-2.compute.amazonaws.com:8080;
     }
 
 	location /getAssetHolder {
-        proxy_pass http://ec2-3-17-77-100.us-east-2.compute.amazonaws.com:8082;
+        proxy_pass http://ec2-18-217-221-241.us-east-2.compute.amazonaws.com:8082;
     }
 
     error_log /var/log/nginx/error.log;
